@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Design — 静けさを設計するデザインシステム</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400..600&family=Shippori+Mincho:wght@500;600&family=Inter:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Claude Design — Design Tokens
+   (このブロックはそのまま src/styles/theme.css へ移植可能)
+   ============================================================ */
+:root {
+  /* color / primitive */
+  --ivory-50:  #FAF9F5;
+  --ivory-100: #F0EEE6;
+  --ivory-200: #E8E6DC;
+  --ink-900:   #141413;
+  --ink-700:   #29261B;
+  --ink-500:   #5E5D59;
+  --ink-300:   #A8A49B;
+  --terracotta-500: #D97757;
+  --terracotta-600: #C15F3C;
+  --olive-500: #788C5D;
+  --amber-500: #D4A27F;
+  --clay-500:  #BF4D43;
+
+  /* color / semantic (light) */
+  --bg-primary: var(--ivory-50);
+  --bg-secondary: var(--ivory-100);
+  --bg-inverse: #141413;
+  --bg-inverse-elevated: #1F1E1D;
+  --text-primary: var(--ink-900);
+  --text-secondary: var(--ink-500);
+  --text-inverse-primary: #F5F4EF;
+  --text-inverse-secondary: #A8A49B;
+  --accent: var(--terracotta-500);
+  --accent-hover: var(--terracotta-600);
+  --accent-on-inverse: #E08A6D;
+  --border: var(--ivory-200);
+  --border-inverse: #3A3937;
+
+  /* typography */
+  --font-display: "Source Serif 4", "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
+  --font-body: "Inter", "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  --text-display-2xl: clamp(3rem, 6.5vw, 5.75rem);
+  --text-display-xl: clamp(2.25rem, 4.5vw, 3.75rem);
+  --text-stat: clamp(2.5rem, 5vw, 4.5rem);
+  --text-heading: 1.75rem;
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-eyebrow: 0.75rem;
+
+  /* layout */
+  --container-full: 1440px;
+  --container-text: 1200px;
+  --gutter: 24px;
+  --space-section-sm: 96px;
+  --space-section-md: 128px;
+  --space-section-lg: 160px;
+
+  /* shape */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-reveal: 700ms;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "palt" 1;
+}
+
+/* texture/grain — 紙の質感 */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection { background: var(--terracotta-500); color: var(--ivory-50); }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+
+.container { max-width: var(--container-full); margin-inline: auto; padding-inline: clamp(20px, 4vw, 48px); }
+
+.serif { font-family: var(--font-display); }
+
+.eyebrow {
+  font-size: var(--text-eyebrow);
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.eyebrow .tick { color: var(--accent); margin-right: 0.6em; }
+
+/* reveal motion — 一種類だけ */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--duration-reveal) var(--ease-out-expo),
+              transform var(--duration-reveal) var(--ease-out-expo);
+}
+[data-reveal].is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+  .marquee-track { animation: none !important; }
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.85em 1.8em;
+  background: var(--accent);
+  color: var(--ivory-50);
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out-expo),
+              transform var(--duration-fast) var(--ease-out-expo);
+}
+.btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+.btn .arrow { transition: transform var(--duration-fast) var(--ease-out-expo); }
+.btn:hover .arrow { transform: translateX(3px); }
+
+/* Aesop 由来の quiet バリアント */
+.btn-quiet {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--text-primary);
+  text-decoration: none;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--ink-300);
+  transition: color var(--duration-fast), border-color var(--duration-fast);
+}
+.btn-quiet:hover { color: var(--accent-hover); border-color: var(--accent-hover); }
+
+/* ============================================================
+   Header
+   ============================================================ */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: color-mix(in srgb, var(--bg-primary) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+.wordmark {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+.wordmark sup { font-size: 0.5em; color: var(--accent); margin-left: 2px; }
+.site-nav { display: flex; align-items: center; gap: clamp(20px, 3vw, 40px); }
+.site-nav a:not(.btn) {
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--duration-fast);
+}
+.site-nav a:not(.btn):hover { color: var(--text-primary); }
+.site-nav .btn { padding: 0.6em 1.4em; }
+@media (max-width: 760px) { .site-nav a:not(.btn) { display: none; } }
+
+/* ============================================================
+   Hero
+   ============================================================ */
+.hero { padding-block: var(--space-section-sm) var(--space-section-md); }
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: clamp(40px, 6vw, 96px);
+  align-items: center;
+}
+@media (max-width: 960px) { .hero-grid { grid-template-columns: 1fr; } }
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-display-2xl);
+  font-weight: 500;
+  line-height: 1.14;
+  letter-spacing: 0.01em;
+  margin: 28px 0 12px;
+}
+.hero .subline {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  color: var(--accent-hover);
+  margin-bottom: 28px;
+}
+.hero .lead {
+  max-width: 34em;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+}
+.hero-cta { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+
+.hero-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: var(--space-section-sm);
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-300);
+  text-transform: uppercase;
+}
+
+/* hero art — 色面と活字による独自グラフィック(FIG. 01) */
+.fig { user-select: none; }
+.fig-frame {
+  position: relative;
+  aspect-ratio: 4 / 4.6;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.plate { position: absolute; border-radius: var(--radius-md); }
+.plate-terracotta {
+  inset: 9% 30% 34% 9%;
+  background: var(--terracotta-500);
+  display: flex; align-items: center; justify-content: center;
+}
+.plate-terracotta span {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 11vw, 9rem);
+  font-weight: 500;
+  color: var(--ivory-50);
+  transform: translateY(-2%);
+}
+.plate-ink {
+  inset: 44% 9% 9% 42%;
+  background: var(--ink-900);
+  display: flex; align-items: flex-end; justify-content: flex-start;
+  padding: 7%;
+}
+.plate-ink span {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+  color: var(--ivory-100);
+  line-height: 1;
+}
+.plate-olive { inset: 13% 12% 66% 76%; background: var(--olive-500); }
+.plate-amber { inset: 70% 72% 12% 12%; background: var(--amber-500); }
+.fig-caption {
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-300);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ============================================================
+   Marquee(mymind 由来 — 低速・上品に)
+   ============================================================ */
+.marquee {
+  border-block: 1px solid var(--border);
+  background: var(--bg-secondary);
+  overflow: hidden;
+  padding-block: 22px;
+}
+.marquee-track {
+  display: flex;
+  gap: 0;
+  width: max-content;
+  animation: marquee 46s linear infinite;
+}
+.marquee-track span {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  padding-inline: 1.4em;
+}
+.marquee-track .sep { color: var(--accent); padding-inline: 0; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* ============================================================
+   Sections(共通)
+   ============================================================ */
+.section { padding-block: var(--space-section-md); }
+.section-head { max-width: 620px; margin-bottom: 72px; }
+.section-head h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-display-xl);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  margin: 20px 0 16px;
+}
+.section-head p { color: var(--text-secondary); }
+
+/* ============================================================
+   EditorialList — 番号付き原則(Pentagram 由来)
+   ============================================================ */
+.principles { list-style: none; }
+.principles li { border-top: 1px solid var(--border); }
+.principles li:last-child { border-bottom: 1px solid var(--border); }
+.principle {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 5fr) minmax(0, 6fr) 48px;
+  gap: clamp(16px, 3vw, 48px);
+  align-items: baseline;
+  padding-block: 40px;
+  text-decoration: none;
+  transition: background var(--duration-base) var(--ease-out-expo);
+}
+.principle:hover { background: var(--bg-secondary); }
+.principle .no {
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  font-weight: 400;
+  color: var(--ink-300);
+  line-height: 1;
+}
+.principle h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-weight: 500;
+  line-height: 1.4;
+}
+.principle p { font-size: var(--text-small); color: var(--text-secondary); }
+.principle .go {
+  font-size: 1.4rem;
+  color: var(--ink-300);
+  justify-self: end;
+  transition: transform var(--duration-fast) var(--ease-out-expo), color var(--duration-fast);
+}
+.principle:hover .go { transform: translateX(6px); color: var(--accent); }
+@media (max-width: 860px) {
+  .principle { grid-template-columns: 64px 1fr; }
+  .principle .no { font-size: 1.8rem; }
+  .principle p { grid-column: 2; }
+  .principle .go { display: none; }
+}
+
+/* ============================================================
+   DarkBand + StatBand(Mercury / Oura 由来)
+   ============================================================ */
+.dark-band {
+  background: var(--bg-inverse);
+  color: var(--text-inverse-primary);
+  padding-block: var(--space-section-lg);
+}
+.dark-band .eyebrow { color: var(--text-inverse-secondary); }
+.dark-band .eyebrow .tick { color: var(--accent-on-inverse); }
+.dark-band h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-display-xl);
+  font-weight: 500;
+  line-height: 1.25;
+  margin: 20px 0 16px;
+  max-width: 15em;
+}
+.dark-band .section-lead { color: var(--text-inverse-secondary); max-width: 36em; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 88px;
+  border-top: 1px solid var(--border-inverse);
+}
+.stat {
+  padding: 36px clamp(16px, 2.5vw, 40px) 8px 0;
+  border-right: 1px solid var(--border-inverse);
+}
+.stat:last-child { border-right: none; }
+.stat .value {
+  font-family: var(--font-display);
+  font-size: var(--text-stat);
+  font-weight: 500;
+  line-height: 1.1;
+  font-variant-numeric: lining-nums;
+}
+.stat .value em { font-style: normal; color: var(--accent-on-inverse); }
+.stat .label {
+  display: block;
+  margin-top: 10px;
+  font-size: var(--text-small);
+  color: var(--text-inverse-secondary);
+}
+@media (max-width: 860px) {
+  .stats { grid-template-columns: 1fr 1fr; }
+  .stat:nth-child(2) { border-right: none; }
+  .stat:nth-child(n+3) { border-top: 1px solid var(--border-inverse); }
+}
+
+/* ============================================================
+   Foundation — 活字見本と色票
+   ============================================================ */
+.specimen {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-primary);
+  margin-bottom: 56px;
+  overflow: hidden;
+}
+.specimen-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 30px clamp(20px, 3vw, 44px);
+  border-bottom: 1px solid var(--border);
+}
+.specimen-row:last-child { border-bottom: none; }
+.specimen-row .sample { font-family: var(--font-display); font-weight: 500; line-height: 1.2; }
+.specimen-row.s-2xl .sample { font-size: var(--text-display-2xl); line-height: 1.05; }
+.specimen-row.s-xl .sample { font-size: var(--text-display-xl); }
+.specimen-row.s-h .sample { font-size: var(--text-heading); }
+.specimen-row.s-body .sample { font-family: var(--font-body); font-size: var(--text-body); font-weight: 400; max-width: 34em; }
+.specimen-row .spec {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-300);
+}
+@media (max-width: 640px) { .specimen-row { flex-direction: column; gap: 8px; } }
+
+.chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  gap: 12px;
+}
+.chip { text-decoration: none; }
+.chip .swatch {
+  height: 140px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  transition: transform var(--duration-fast) var(--ease-out-expo);
+}
+.chip:hover .swatch { transform: translateY(-3px); }
+.chip .name { margin-top: 10px; font-size: 0.78rem; font-weight: 500; }
+.chip .hex {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-300);
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   PullQuote
+   ============================================================ */
+.pull-quote {
+  padding-block: var(--space-section-lg);
+  background: var(--bg-secondary);
+  border-block: 1px solid var(--border);
+  text-align: center;
+}
+.pull-quote .mark { font-size: 1.5rem; color: var(--accent); display: block; margin-bottom: 32px; }
+.pull-quote blockquote {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+  font-weight: 500;
+  line-height: 1.5;
+  max-width: 24em;
+  margin-inline: auto;
+}
+.pull-quote cite {
+  display: block;
+  margin-top: 36px;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   CTA
+   ============================================================ */
+.cta { padding-block: var(--space-section-md); }
+.cta-inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.cta h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-display-xl);
+  font-weight: 500;
+  line-height: 1.25;
+  max-width: 14em;
+  margin-top: 20px;
+}
+.cta-actions { display: flex; align-items: center; gap: 32px; padding-bottom: 8px; }
+
+/* ============================================================
+   MegaFooter(Mercury 由来)
+   ============================================================ */
+.mega-footer {
+  background: var(--bg-inverse);
+  color: var(--text-inverse-primary);
+  padding-top: var(--space-section-sm);
+  overflow: hidden;
+}
+.footer-cols {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 88px;
+}
+.footer-cols .tagline {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.6;
+  max-width: 16em;
+}
+.footer-cols h4 {
+  font-size: var(--text-eyebrow);
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-inverse-secondary);
+  margin-bottom: 20px;
+}
+.footer-cols ul { list-style: none; }
+.footer-cols li { margin-bottom: 12px; }
+.footer-cols a {
+  font-size: var(--text-small);
+  color: var(--text-inverse-primary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--duration-fast);
+}
+.footer-cols a:hover { border-color: var(--accent-on-inverse); }
+@media (max-width: 860px) { .footer-cols { grid-template-columns: 1fr 1fr; } }
+
+.footer-wordmark {
+  font-family: var(--font-display);
+  font-size: clamp(3.4rem, 11.5vw, 10.5rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 0.96;
+  white-space: nowrap;
+  color: var(--text-inverse-primary);
+  opacity: 0.96;
+  margin-bottom: -0.14em;
+}
+.footer-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border-inverse);
+  padding-block: 22px 26px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-inverse-secondary);
+}
+</style>
+</head>
+<body>
+
+<!-- ================= Header ================= -->
+<header class="site-header">
+  <div class="container">
+    <a class="wordmark" href="#">Claude Design<sup>&#10035;</sup></a>
+    <nav class="site-nav" aria-label="グローバルナビゲーション">
+      <a href="#principles">設計原則</a>
+      <a href="#foundation">ファウンデーション</a>
+      <a href="#docs">ドキュメント</a>
+      <a class="btn" href="#docs">はじめる</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ================= Hero ================= -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div data-reveal>
+          <p class="eyebrow"><span class="tick">&#10035;</span>Claude Design System — Edition 2026</p>
+          <h1>静けさを、<br>設計する。</h1>
+          <p class="subline">A design system for calm, confident products.</p>
+          <p class="lead">声を張らないデザインには、根拠が要ります。Claude Design は、余白・活字・節度をトークンとして定義し、どの画面にも同じ品格を与えるデザインシステムです。</p>
+          <div class="hero-cta">
+            <a class="btn" href="#docs">ドキュメントを見る <span class="arrow">&rarr;</span></a>
+            <a class="btn-quiet" href="#principles">設計原則を読む</a>
+          </div>
+        </div>
+        <figure class="fig" data-reveal aria-hidden="true">
+          <div class="fig-frame">
+            <div class="plate plate-terracotta"><span>あ</span></div>
+            <div class="plate plate-olive"></div>
+            <div class="plate plate-ink"><span>Aa</span></div>
+            <div class="plate plate-amber"></div>
+          </div>
+          <figcaption class="fig-caption"><span>Fig. 01</span><span>Palette &amp; Type in use</span></figcaption>
+        </figure>
+      </div>
+      <div class="hero-meta" data-reveal>
+        <span>Tokyo — 2026</span>
+        <span>v0.1 / Foundations</span>
+        <span>Ivory &middot; Ink &middot; Terracotta</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Marquee ================= -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>余白</span><span class="sep">&#10035;</span><span>静けさ</span><span class="sep">&#10035;</span><span>節度</span><span class="sep">&#10035;</span><span>手触り</span><span class="sep">&#10035;</span><span>品格</span><span class="sep">&#10035;</span><span>編集</span><span class="sep">&#10035;</span>
+      <span>余白</span><span class="sep">&#10035;</span><span>静けさ</span><span class="sep">&#10035;</span><span>節度</span><span class="sep">&#10035;</span><span>手触り</span><span class="sep">&#10035;</span><span>品格</span><span class="sep">&#10035;</span><span>編集</span><span class="sep">&#10035;</span>
+    </div>
+  </div>
+
+  <!-- ================= Principles ================= -->
+  <section class="section" id="principles">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow"><span class="tick">&#10035;</span>Principles</p>
+        <h2>四つの原則が、<br>すべてを決める。</h2>
+      </div>
+      <ul class="principles">
+        <li data-reveal>
+          <a class="principle" href="#docs">
+            <span class="no serif">01</span>
+            <h3>余白は情報である</h3>
+            <p>詰めれば安く見え、空ければ高く見える。余白は削るコストではなく、意味を運ぶ媒体として設計する。</p>
+            <span class="go">&rarr;</span>
+          </a>
+        </li>
+        <li data-reveal>
+          <a class="principle" href="#docs">
+            <span class="no serif">02</span>
+            <h3>タイポグラフィが階層を作る</h3>
+            <p>色や罫線より先に、サイズ・ウェイト・書体で秩序を作る。見出しはセリフ、本文はサンセリフ。</p>
+            <span class="go">&rarr;</span>
+          </a>
+        </li>
+        <li data-reveal>
+          <a class="principle" href="#docs">
+            <span class="no serif">03</span>
+            <h3>色は少なく、意味深く</h3>
+            <p>画面の 95% はアイボリーとインクで組む。テラコッタは 1 画面に 1〜2 箇所。彩度は資産であり、浪費しない。</p>
+            <span class="go">&rarr;</span>
+          </a>
+        </li>
+        <li data-reveal>
+          <a class="principle" href="#docs">
+            <span class="no serif">04</span>
+            <h3>モーションは一種類でいい</h3>
+            <p>700ms のリビールと 150ms のホバー。それ以外の動きは、すべてノイズとして扱う。</p>
+            <span class="go">&rarr;</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= DarkBand + Stats ================= -->
+  <section class="dark-band">
+    <div class="container">
+      <div data-reveal>
+        <p class="eyebrow"><span class="tick">&#10035;</span>Built to scale</p>
+        <h2>数字で語れる品質を、<br>最初の一日から。</h2>
+        <p class="section-lead">トークンからコンポーネントまで一気通貫。ハードコードされた色は一つもなく、テーマの切り替えは属性ひとつで完了します。</p>
+      </div>
+      <div class="stats" data-reveal>
+        <div class="stat"><span class="value">214</span><span class="label">デザイントークン</span></div>
+        <div class="stat"><span class="value">48</span><span class="label">コンポーネント(P0–P2)</span></div>
+        <div class="stat"><span class="value">AA<em>&#10035;</em></span><span class="label">WCAG 2.1 コントラスト準拠</span></div>
+        <div class="stat"><span class="value">2</span><span class="label">テーマ — Light / Dark</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Foundation ================= -->
+  <section class="section" id="foundation">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow"><span class="tick">&#10035;</span>Foundation</p>
+        <h2>活字と色票。<br>それが土台のすべて。</h2>
+        <p>Source Serif 4 と Shippori Mincho による見出し、Inter と Noto Sans JP による本文。色は 10 のプリミティブから、意味を持つセマンティックへ。</p>
+      </div>
+
+      <div class="specimen" data-reveal>
+        <div class="specimen-row s-2xl"><span class="sample">永い余白</span><span class="spec">Display 2XL — clamp(48–92) / serif</span></div>
+        <div class="specimen-row s-xl"><span class="sample">静けさの設計</span><span class="spec">Display XL — clamp(36–60) / serif</span></div>
+        <div class="specimen-row s-h"><span class="sample">見出しのための明朝体</span><span class="spec">Heading — 28 / serif 500</span></div>
+        <div class="specimen-row s-body"><span class="sample">本文は 16px、行間は 1.8。和文の可読性を最優先に、ひらがなの多い文章でも息ができる組みにする。</span><span class="spec">Body — 16 / sans 400 / lh 1.8</span></div>
+      </div>
+
+      <div class="chips" data-reveal>
+        <div class="chip"><div class="swatch" style="background:#FAF9F5"></div><div class="name">Ivory 50</div><div class="hex">#FAF9F5</div></div>
+        <div class="chip"><div class="swatch" style="background:#F0EEE6"></div><div class="name">Ivory 100</div><div class="hex">#F0EEE6</div></div>
+        <div class="chip"><div class="swatch" style="background:#E8E6DC"></div><div class="name">Ivory 200</div><div class="hex">#E8E6DC</div></div>
+        <div class="chip"><div class="swatch" style="background:#141413"></div><div class="name">Ink 900</div><div class="hex">#141413</div></div>
+        <div class="chip"><div class="swatch" style="background:#5E5D59"></div><div class="name">Ink 500</div><div class="hex">#5E5D59</div></div>
+        <div class="chip"><div class="swatch" style="background:#D97757"></div><div class="name">Terracotta 500</div><div class="hex">#D97757</div></div>
+        <div class="chip"><div class="swatch" style="background:#C15F3C"></div><div class="name">Terracotta 600</div><div class="hex">#C15F3C</div></div>
+        <div class="chip"><div class="swatch" style="background:#788C5D"></div><div class="name">Olive 500</div><div class="hex">#788C5D</div></div>
+        <div class="chip"><div class="swatch" style="background:#D4A27F"></div><div class="name">Amber 500</div><div class="hex">#D4A27F</div></div>
+        <div class="chip"><div class="swatch" style="background:#BF4D43"></div><div class="name">Clay 500</div><div class="hex">#BF4D43</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PullQuote ================= -->
+  <section class="pull-quote">
+    <div class="container" data-reveal>
+      <span class="mark" aria-hidden="true">&#10035;</span>
+      <blockquote>上質とは、足した量ではなく、<br>削った痕跡が見えないことだ。</blockquote>
+      <cite>— Claude Design 設計原則 / §01</cite>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="cta" id="docs">
+    <div class="container">
+      <div class="cta-inner" data-reveal>
+        <div>
+          <p class="eyebrow"><span class="tick">&#10035;</span>Get started</p>
+          <h2>このシステムで、<br>最初のページを組もう。</h2>
+        </div>
+        <div class="cta-actions">
+          <a class="btn" href="#">ドキュメントを見る <span class="arrow">&rarr;</span></a>
+          <a class="btn-quiet" href="#">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= MegaFooter ================= -->
+<footer class="mega-footer">
+  <div class="container">
+    <div class="footer-cols">
+      <p class="tagline">静けさを設計する、<br>デザインシステム。</p>
+      <div>
+        <h4>System</h4>
+        <ul>
+          <li><a href="#foundation">ファウンデーション</a></li>
+          <li><a href="#principles">設計原則</a></li>
+          <li><a href="#">コンポーネント</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">ドキュメント</a></li>
+          <li><a href="#">Storybook</a></li>
+          <li><a href="#">変更履歴</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Elsewhere</h4>
+        <ul>
+          <li><a href="#">GitHub</a></li>
+          <li><a href="#">Figma</a></li>
+          <li><a href="#">X</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-wordmark" aria-hidden="true">Claude Design</div>
+    <div class="footer-meta">
+      <span>&copy; 2026 Claude Design</span>
+      <span>Set in Source Serif 4 &amp; Inter</span>
+      <span>Ivory &middot; Ink &middot; Terracotta</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// スクロールリビール — システムで許可された唯一のモーション
+const io = new IntersectionObserver((entries) => {
+  for (const e of entries) {
+    if (e.isIntersecting) {
+      e.target.classList.add('is-visible');
+      io.unobserve(e.target);
+    }
+  }
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('[data-reveal]').forEach((el, i) => {
+  el.style.transitionDelay = `${(i % 4) * 60}ms`;
+  io.observe(el);
+});
+</script>
+</body>
+</html>

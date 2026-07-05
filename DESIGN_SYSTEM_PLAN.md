@@ -114,7 +114,10 @@ Style Dictionary で W3C Design Tokens 形式の JSON を単一ソースにし�
 |---|---|
 | **P0(最初の 2 週間)** | Button, IconButton, Input, Textarea, Select, Checkbox, Radio, Switch, Badge, Card, Spinner |
 | **P1(次の 2 週間)** | Dialog(Modal), Tooltip, Toast, Tabs, DropdownMenu, Avatar, Alert, Skeleton |
+| **P1-M(HP・マーケティング層)** | Eyebrow, HeroEditorial, Marquee, EditorialList, DarkBand, StatBand, PullQuote, CaseCard, MegaFooter |
 | **P2(必要に応じて)** | Table, Pagination, Breadcrumb, Accordion, Popover, DatePicker, Command Palette |
+
+P1-M はアプリ UI とは独立した「HP 用」レイヤー。選定根拠と参照サイトは [`docs/design-references.md`](docs/design-references.md) を参照。
 
 各コンポーネントの完成条件(Definition of Done):
 1. トークンのみでスタイリングされている(ハードコード色なし)
@@ -183,3 +186,22 @@ claude-design/
 2. このドキュメントの §2 をベースにトークン JSON を作成
 3. Storybook にカラーパレット / タイポグラフィのドキュメントページを作成
 4. リファレンス実装として `Button` を 1 つ完成させ、命名規約・ファイル構成のテンプレートにする
+
+---
+
+## 8. HP リファレンス反映によるシステム拡張(2026-07-05 追加)
+
+実在サイト 10 選(Anthropic / Claude / Mercury / Aesop / mymind / Polestar / Oura / Pentagram / Watershed / Linear)を分析し、「リッチで AI っぽくない」HP を作るための拡張を行った。詳細は [`docs/design-references.md`](docs/design-references.md)。
+
+### 追加されたもの(サマリ)
+
+- **カラー**: インバース系トークン(`bg/inverse: #141413` ほか 6 種)— ページに緩急を作るダークセクション用
+- **タイポ**: ディスプレイスケール(`display-2xl` / `display-xl` / `eyebrow` / `stat`)、欧文セリフイタリックの強調用法
+- **レイアウト**: 12 カラムグリッド、セクション余白 `96/128/160px`、影の代わりに 1px 罫線で区切る原則
+- **モーション**: `ease-out-expo`、リビール 700ms 一種類のみ、`prefers-reduced-motion` 対応
+- **質感**: グレイン(粒子)オーバーレイトークン
+- **コンポーネント**: P1-M マーケティング層 9 種(§4 参照)
+
+### 実装デモ
+
+トークンをすべて適用した HP モック: [`preview/index.html`](preview/index.html)(依存ゼロの単一 HTML。トークン定義は `:root` の CSS 変数としてそのまま Phase 0 の `theme.css` に移植可能)
