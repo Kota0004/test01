@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Design — The Specimen（Opus 4.8 版）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400..600&family=Shippori+Mincho:wght@500;600;700&family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Claude Design — Tokens（light / dark を data-theme で切替）
+   このブロックはそのまま theme.css へ移植可能
+   ============================================================ */
+:root {
+  /* type */
+  --font-display: "Source Serif 4", "Shippori Mincho", "Yu Mincho", Georgia, serif;
+  --font-body: "Inter", "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  --step-display: clamp(3.5rem, 9vw, 8.5rem);
+  --step-xl: clamp(2.25rem, 4.4vw, 3.5rem);
+  --step-h: 1.625rem;
+  --step-body: 1.0625rem;
+  --step-small: 0.8125rem;
+  --step-label: 0.6875rem;
+
+  /* space / shape / motion */
+  --gutter: clamp(20px, 4vw, 56px);
+  --sect: clamp(80px, 11vw, 160px);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --fast: 160ms;
+  --base: 260ms;
+  --reveal: 760ms;
+
+  /* color — semantic (light) */
+  --bg: #FAF9F5;
+  --bg-2: #F0EEE6;
+  --bg-inset: #FFFFFF;
+  --text: #141413;
+  --text-2: #605E58;
+  --text-3: #97938A;
+  --line: #E3E0D6;
+  --line-strong: #D3CFC2;
+  --accent: #C15F3C;
+  --accent-quiet: #D97757;
+  --olive: #6E8250;
+  --amber: #C98A50;
+  --clay: #BF4D43;
+}
+[data-theme="dark"] {
+  --bg: #16150F;
+  --bg-2: #1E1D16;
+  --bg-inset: #232219;
+  --text: #F6F4EC;
+  --text-2: #B4AF9F;
+  --text-3: #817C6E;
+  --line: #34322A;
+  --line-strong: #45423A;
+  --accent: #E58C6B;
+  --accent-quiet: #D97757;
+  --olive: #9BAE7B;
+  --amber: #DDAE7C;
+  --clay: #D8695E;
+}
+
+* , *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--step-body);
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "palt" 1;
+  transition: background var(--base) var(--ease), color var(--base) var(--ease);
+}
+/* paper grain */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+  opacity: 0.04; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+[data-theme="dark"] body::after { mix-blend-mode: screen; opacity: 0.03; }
+::selection { background: var(--accent); color: var(--bg); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+.wrap { max-width: 1360px; margin-inline: auto; padding-inline: var(--gutter); }
+.serif { font-family: var(--font-display); }
+.mono { font-family: var(--font-mono); }
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.rule { border: 0; border-top: 1px solid var(--line); }
+
+/* reveal — 唯一許可されたモーション */
+[data-reveal] { opacity: 0; transform: translateY(22px); transition: opacity var(--reveal) var(--ease), transform var(--reveal) var(--ease); }
+[data-reveal].in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+}
+
+/* ============================================================
+   Masthead（雑誌の題字風・running head + テーマトグル）
+   ============================================================ */
+.masthead {
+  position: sticky; top: 0; z-index: 100;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(12px) saturate(1.1);
+  border-bottom: 1px solid var(--line);
+}
+.masthead .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 24px; }
+.mh-title { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; letter-spacing: 0.01em; white-space: nowrap; }
+.mh-title b { color: var(--accent); font-weight: 600; }
+.mh-meta { display: flex; gap: 28px; align-items: center; }
+.mh-meta a { font-size: var(--step-small); color: var(--text-2); transition: color var(--fast); }
+.mh-meta a:hover { color: var(--text); }
+@media (max-width: 720px) { .mh-meta a.hide-sm { display: none; } }
+.toggle {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: var(--step-label); letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-2); background: transparent; border: 1px solid var(--line-strong);
+  padding: 7px 12px; border-radius: 999px; cursor: pointer; transition: border-color var(--fast), color var(--fast);
+}
+.toggle:hover { border-color: var(--accent); color: var(--text); }
+.toggle .dot { width: 9px; height: 9px; border-radius: 999px; background: var(--accent); }
+
+/* ============================================================
+   Hero — 活字そのものが図版
+   ============================================================ */
+.hero { padding-top: clamp(56px, 8vw, 120px); padding-bottom: var(--sect); }
+.hero-top { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; flex-wrap: wrap; margin-bottom: clamp(28px, 5vw, 64px); }
+.hero-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--step-display);
+  line-height: 0.98;
+  letter-spacing: 0.005em;
+}
+.hero-display .dot { color: var(--accent); }
+.hero-display em { font-style: italic; font-weight: 400; color: var(--text-2); }
+.hero-en {
+  font-family: var(--font-display); font-style: italic; font-weight: 400;
+  font-size: clamp(1.25rem, 2.4vw, 1.9rem); color: var(--accent);
+  margin-top: 22px;
+}
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 88px); margin-top: clamp(44px, 6vw, 80px); align-items: end; }
+@media (max-width: 880px) { .hero-grid { grid-template-columns: 1fr; gap: 40px; } }
+.hero-lead { font-size: clamp(1.05rem, 1.5vw, 1.25rem); line-height: 1.85; color: var(--text-2); max-width: 32em; }
+.hero-lead b { color: var(--text); font-weight: 500; }
+
+/* index / 目次 */
+.index { border-top: 1px solid var(--text); }
+.index a {
+  display: grid; grid-template-columns: 2.4em 1fr auto; align-items: baseline; gap: 12px;
+  padding: 15px 0; border-bottom: 1px solid var(--line);
+  transition: padding-left var(--base) var(--ease), color var(--fast);
+}
+.index a:hover { padding-left: 10px; color: var(--accent); }
+.index .n { font-family: var(--font-mono); font-size: var(--step-small); color: var(--text-3); }
+.index .t { font-family: var(--font-display); font-size: 1.15rem; font-weight: 500; }
+.index .p { font-family: var(--font-mono); font-size: var(--step-label); color: var(--text-3); letter-spacing: 0.1em; }
+
+/* ============================================================
+   Section scaffolding — 折り丁の番号 + 罫線
+   ============================================================ */
+.section { padding-block: var(--sect); border-top: 1px solid var(--line); }
+.sec-head { display: grid; grid-template-columns: auto 1fr; gap: clamp(16px, 4vw, 56px); align-items: baseline; margin-bottom: clamp(40px, 6vw, 72px); }
+.sec-folio { font-family: var(--font-mono); font-size: var(--step-small); color: var(--accent); letter-spacing: 0.1em; padding-top: 10px; }
+.sec-title { font-family: var(--font-display); font-weight: 500; font-size: var(--step-xl); line-height: 1.18; letter-spacing: 0.01em; }
+.sec-sub { margin-top: 14px; color: var(--text-2); max-width: 34em; font-size: var(--step-body); }
+
+/* Principles — 図版番号つきエディトリアル */
+.princ { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+@media (max-width: 720px) { .princ { grid-template-columns: 1fr; } }
+.princ .cell { background: var(--bg); padding: clamp(28px, 3.4vw, 44px); display: flex; flex-direction: column; gap: 14px; min-height: 210px; }
+.princ .fig { font-family: var(--font-mono); font-size: var(--step-label); letter-spacing: 0.16em; color: var(--text-3); text-transform: uppercase; }
+.princ h3 { font-family: var(--font-display); font-size: var(--step-h); font-weight: 500; line-height: 1.35; }
+.princ p { font-size: var(--step-small); color: var(--text-2); line-height: 1.75; margin-top: auto; }
+
+/* Type specimen */
+.spec { border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+.spec-glyph { padding: clamp(28px, 5vw, 72px) clamp(24px, 4vw, 56px); border-bottom: 1px solid var(--line); background: var(--bg-2); text-align: center; }
+.spec-glyph .big { font-family: var(--font-display); font-weight: 600; font-size: clamp(5rem, 18vw, 14rem); line-height: 0.9; letter-spacing: 0.02em; }
+.spec-glyph .set { margin-top: 20px; font-family: var(--font-display); font-size: clamp(1rem, 2vw, 1.35rem); color: var(--text-2); letter-spacing: 0.06em; }
+.spec-row { display: grid; grid-template-columns: 96px 1fr; gap: 20px; align-items: baseline; padding: 24px clamp(24px, 4vw, 44px); border-bottom: 1px solid var(--line); }
+.spec-row:last-child { border-bottom: 0; }
+.spec-row .meta { font-family: var(--font-mono); font-size: var(--step-label); color: var(--text-3); letter-spacing: 0.08em; line-height: 1.7; }
+.spec-row .demo { font-family: var(--font-display); font-weight: 500; line-height: 1.1; }
+.spec-row.d1 .demo { font-size: clamp(2.5rem, 6vw, 4.5rem); }
+.spec-row.d2 .demo { font-size: var(--step-xl); }
+.spec-row.d3 .demo { font-size: var(--step-h); }
+.spec-row.d4 .demo { font-family: var(--font-body); font-weight: 400; font-size: var(--step-body); color: var(--text); max-width: 36em; line-height: 1.8; }
+@media (max-width: 640px) { .spec-row { grid-template-columns: 1fr; gap: 8px; } }
+
+/* Color swatches — 役割つき */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+.sw { border: 1px solid var(--line); border-radius: var(--radius-md); overflow: hidden; background: var(--bg-inset); }
+.sw .chip { height: 96px; border-bottom: 1px solid var(--line); }
+.sw .body { padding: 12px 14px 14px; }
+.sw .role { font-size: var(--step-small); font-weight: 500; }
+.sw .hex { font-family: var(--font-mono); font-size: var(--step-label); letter-spacing: 0.08em; color: var(--text-3); text-transform: uppercase; margin-top: 2px; }
+.sw .use { font-size: var(--step-label); color: var(--text-2); margin-top: 8px; line-height: 1.6; }
+
+/* ============================================================
+   Components in practice — これは「システム」だという証明
+   ============================================================ */
+.practice { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+@media (max-width: 820px) { .practice { grid-template-columns: 1fr; } }
+.demo-cell { background: var(--bg); padding: clamp(26px, 3.2vw, 40px); }
+.demo-cell > .label { display: block; margin-bottom: 22px; }
+.row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+
+.btn { display: inline-flex; align-items: center; gap: 0.55em; font-family: var(--font-body); font-size: var(--step-small); font-weight: 500; letter-spacing: 0.01em; border-radius: 999px; padding: 0.8em 1.6em; cursor: pointer; border: 1px solid transparent; transition: background var(--fast) var(--ease), transform var(--fast) var(--ease), border-color var(--fast); }
+.btn .ar { transition: transform var(--fast) var(--ease); }
+.btn:hover .ar { transform: translateX(3px); }
+.btn-primary { background: var(--accent); color: var(--bg); }
+.btn-primary:hover { transform: translateY(-1px); filter: brightness(1.04); }
+.btn-secondary { background: transparent; color: var(--text); border-color: var(--line-strong); }
+.btn-secondary:hover { border-color: var(--text); }
+.btn-quiet { background: transparent; color: var(--text); border-radius: 0; border-bottom: 1px solid var(--line-strong); padding: 0.2em 0 0.35em; }
+.btn-quiet:hover { border-color: var(--accent); color: var(--accent); }
+
+.field { display: flex; flex-direction: column; gap: 8px; max-width: 320px; }
+.field label { font-size: var(--step-small); font-weight: 500; }
+.field input { font-family: var(--font-body); font-size: var(--step-body); color: var(--text); background: var(--bg-inset); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); padding: 0.7em 0.9em; transition: border-color var(--fast), box-shadow var(--fast); }
+.field input::placeholder { color: var(--text-3); }
+.field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+.field .hint { font-size: var(--step-label); color: var(--text-3); }
+
+.badges { display: flex; flex-wrap: wrap; gap: 10px; }
+.badge { display: inline-flex; align-items: center; gap: 6px; font-size: var(--step-label); font-weight: 500; letter-spacing: 0.04em; padding: 5px 11px; border-radius: 999px; text-transform: uppercase; }
+.badge::before { content: ""; width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
+.badge.ok { color: var(--olive); background: color-mix(in srgb, var(--olive) 14%, transparent); }
+.badge.warn { color: var(--amber); background: color-mix(in srgb, var(--amber) 16%, transparent); }
+.badge.err { color: var(--clay); background: color-mix(in srgb, var(--clay) 14%, transparent); }
+.badge.neutral { color: var(--text-2); background: color-mix(in srgb, var(--text-2) 12%, transparent); }
+
+.mini-card { grid-column: 1 / -1; background: var(--bg); }
+.pcard { display: grid; grid-template-columns: 132px 1fr; gap: clamp(18px, 3vw, 32px); align-items: center; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 22px; }
+@media (max-width: 560px) { .pcard { grid-template-columns: 1fr; } }
+.pcard .thumb { aspect-ratio: 1; border-radius: var(--radius-sm); background: linear-gradient(135deg, var(--accent-quiet), var(--accent)); display: flex; align-items: center; justify-content: center; }
+.pcard .thumb span { font-family: var(--font-display); font-size: 3rem; color: var(--bg); }
+.pcard h4 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 500; margin-bottom: 6px; }
+.pcard p { font-size: var(--step-small); color: var(--text-2); margin-bottom: 14px; }
+
+/* ============================================================
+   Dark manifesto interlude
+   ============================================================ */
+.manifesto { background: #141210; color: #F6F4EC; padding-block: clamp(100px, 14vw, 200px); border-top: 1px solid var(--line); }
+.manifesto .label { color: #817C6E; }
+.manifesto blockquote { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.75rem, 4.2vw, 3.4rem); line-height: 1.42; letter-spacing: 0.01em; max-width: 20em; margin-top: 28px; }
+.manifesto blockquote .hl { color: #E58C6B; font-style: italic; font-weight: 400; }
+.manifesto cite { display: block; margin-top: 40px; font-family: var(--font-mono); font-style: normal; font-size: var(--step-label); letter-spacing: 0.14em; text-transform: uppercase; color: #B4AF9F; }
+
+/* ============================================================
+   Colophon footer
+   ============================================================ */
+.colophon { background: var(--bg-2); border-top: 1px solid var(--line); padding-top: var(--sect); overflow: hidden; }
+.col-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 32px; padding-bottom: 72px; }
+@media (max-width: 820px) { .col-grid { grid-template-columns: 1fr 1fr; gap: 40px 24px; } }
+.col-grid .cta-line { font-family: var(--font-display); font-size: 1.35rem; font-weight: 500; line-height: 1.6; max-width: 15em; margin-bottom: 20px; }
+.col-grid h4 { font-family: var(--font-mono); font-size: var(--step-label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3); margin-bottom: 16px; }
+.col-grid ul { list-style: none; }
+.col-grid li { margin-bottom: 10px; }
+.col-grid li a { font-size: var(--step-small); color: var(--text-2); border-bottom: 1px solid transparent; transition: color var(--fast), border-color var(--fast); }
+.col-grid li a:hover { color: var(--text); border-color: var(--accent); }
+.wordmark { font-family: var(--font-display); font-weight: 600; font-size: clamp(3rem, 15vw, 15rem); line-height: 0.9; letter-spacing: -0.01em; white-space: nowrap; margin-bottom: -0.12em; }
+.wordmark .dot { color: var(--accent); }
+.col-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px; border-top: 1px solid var(--line); padding-block: 22px 28px; font-family: var(--font-mono); font-size: var(--step-label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+</style>
+</head>
+<body>
+
+<!-- ============ Masthead ============ -->
+<header class="masthead">
+  <div class="wrap">
+    <a class="mh-title" href="#top">Claude Design <b>✳</b> <span style="color:var(--text-3);font-weight:400">The Specimen</span></a>
+    <nav class="mh-meta">
+      <a class="hide-sm" href="#principles">原則</a>
+      <a class="hide-sm" href="#type">活字</a>
+      <a class="hide-sm" href="#color">色</a>
+      <a class="hide-sm" href="#practice">部品</a>
+      <button class="toggle" id="themeToggle" aria-label="ライト・ダーク切替"><span class="dot"></span><span id="themeLabel">Light</span></button>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <!-- ============ Hero ============ -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-top" data-reveal>
+        <span class="label">Claude Design System — Vol.01 / 東京 / 2026</span>
+        <span class="label">Set in Source Serif 4 &amp; Shippori Mincho</span>
+      </div>
+      <h1 class="hero-display" data-reveal>静けさを、<br>設計する<span class="dot">。</span></h1>
+      <p class="hero-en" data-reveal>The system for calm, confident interfaces.</p>
+      <div class="hero-grid">
+        <p class="hero-lead" data-reveal><b>声を張らないデザインには、根拠が要る。</b>Claude Design は、余白・活字・節度をトークンとして定義し、Web サイトからプロダクト UI まで一貫した品格を与える見本帳です。派手さではなく、静けさで信頼を作ります。</p>
+        <nav class="index" data-reveal aria-label="目次">
+          <a href="#principles"><span class="n">01</span><span class="t">設計原則</span><span class="p">Principles</span></a>
+          <a href="#type"><span class="n">02</span><span class="t">タイポグラフィ</span><span class="p">Type</span></a>
+          <a href="#color"><span class="n">03</span><span class="t">カラー</span><span class="p">Color</span></a>
+          <a href="#practice"><span class="n">04</span><span class="t">実装の部品</span><span class="p">In practice</span></a>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 01 Principles ============ -->
+  <section class="section" id="principles">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <span class="sec-folio">01 — 原則</span>
+        <div>
+          <h2 class="sec-title">四つの原則が、<br>すべての判断を決める。</h2>
+          <p class="sec-sub">迷ったときに立ち返る、システムの憲法。装飾のためのルールではなく、意思決定を速くするための道具です。</p>
+        </div>
+      </div>
+      <div class="princ" data-reveal>
+        <div class="cell">
+          <span class="fig">Fig. 01</span>
+          <h3>余白は、情報である</h3>
+          <p>詰めれば安く、空ければ高く見える。余白は削るコストではなく、意味を運ぶ媒体として設計する。</p>
+        </div>
+        <div class="cell">
+          <span class="fig">Fig. 02</span>
+          <h3>活字が、階層を作る</h3>
+          <p>色や罫線より先に、サイズ・ウェイト・書体で秩序を組む。見出しは明朝、本文はサンセリフ。</p>
+        </div>
+        <div class="cell">
+          <span class="fig">Fig. 03</span>
+          <h3>色は少なく、意味は深く</h3>
+          <p>画面の 95% はアイボリーとインクで組む。テラコッタは 1 画面に 1〜2 箇所。彩度は浪費しない資産。</p>
+        </div>
+        <div class="cell">
+          <span class="fig">Fig. 04</span>
+          <h3>動きは、一種類でいい</h3>
+          <p>760ms のリビールと 160ms のホバー。それ以外の動きは、すべてノイズとして扱う。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 Type ============ -->
+  <section class="section" id="type">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <span class="sec-folio">02 — 活字</span>
+        <div>
+          <h2 class="sec-title">明朝で語り、<br>サンセリフで支える。</h2>
+          <p class="sec-sub">見出しは Source Serif 4 と Shippori Mincho。本文は Inter と Noto Sans JP。この二層で、静けさと可読性を両立させます。</p>
+        </div>
+      </div>
+      <div class="spec" data-reveal>
+        <div class="spec-glyph">
+          <div class="big">Aa 永</div>
+          <div class="set">明朝体 — 意 匠 品 格 静 寂 &nbsp;·&nbsp; Serif — Grace &amp; Restraint</div>
+        </div>
+        <div class="spec-row d1"><span class="meta">Display<br>clamp 40–72<br>serif 600</span><span class="demo">静けさの設計</span></div>
+        <div class="spec-row d2"><span class="meta">Heading XL<br>clamp 36–56<br>serif 500</span><span class="demo">余白は情報である</span></div>
+        <div class="spec-row d3"><span class="meta">Heading<br>26 / serif 500</span><span class="demo">見出しのための明朝体</span></div>
+        <div class="spec-row d4"><span class="meta">Body<br>17 / sans<br>lh 1.8</span><span class="demo">本文は 17px、行間は 1.8。和文の可読性を最優先に、ひらがなの多い文章でも呼吸ができる組みにする。文字は詰めすぎず、行は長くしすぎない。</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 Color ============ -->
+  <section class="section" id="color">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <span class="sec-folio">03 — 色</span>
+        <div>
+          <h2 class="sec-title">十色で、<br>すべてを組む。</h2>
+          <p class="sec-sub">背景・文字・アクセント・状態。役割ごとに名前を与え、コードは色そのものではなく役割を参照する。右上のトグルで、この見本帳ごとダークに切り替わります。</p>
+        </div>
+      </div>
+      <div class="swatches" data-reveal>
+        <div class="sw"><div class="chip" style="background:var(--bg)"></div><div class="body"><div class="role">Background</div><div class="hex" id="hx-bg">#FAF9F5</div><div class="use">ページ全体の地色</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--bg-2)"></div><div class="body"><div class="role">Surface</div><div class="hex" id="hx-bg2">#F0EEE6</div><div class="use">セクション・カード背景</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--text)"></div><div class="body"><div class="role">Text</div><div class="hex" id="hx-text">#141413</div><div class="use">本文・見出し</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--text-2)"></div><div class="body"><div class="role">Text muted</div><div class="hex" id="hx-text2">#605E58</div><div class="use">補助テキスト</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--accent)"></div><div class="body"><div class="role">Accent</div><div class="hex" id="hx-accent">#C15F3C</div><div class="use">CTA・強調（1画面1〜2箇所）</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--olive)"></div><div class="body"><div class="role">Success</div><div class="hex" id="hx-olive">#6E8250</div><div class="use">成功・肯定状態</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--amber)"></div><div class="body"><div class="role">Warning</div><div class="hex" id="hx-amber">#C98A50</div><div class="use">注意・保留状態</div></div></div>
+        <div class="sw"><div class="chip" style="background:var(--clay)"></div><div class="body"><div class="role">Error</div><div class="hex" id="hx-clay">#BF4D43</div><div class="use">エラー・破壊的操作</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Dark manifesto ============ -->
+  <section class="manifesto">
+    <div class="wrap" data-reveal>
+      <span class="label">Manifesto</span>
+      <blockquote>上質とは、足した量ではなく、<br><span class="hl">削った痕跡が見えない</span>ことだ。</blockquote>
+      <cite>Claude Design 設計原則 — §01</cite>
+    </div>
+  </section>
+
+  <!-- ============ 04 Practice ============ -->
+  <section class="section" id="practice">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <span class="sec-folio">04 — 部品</span>
+        <div>
+          <h2 class="sec-title">これは 1 枚の絵ではなく、<br>組み立てられる部品だ。</h2>
+          <p class="sec-sub">同じトークンから生まれたボタン・入力欄・バッジ・カード。ページを何枚作っても、見た目と挙動は破綻しません。</p>
+        </div>
+      </div>
+      <div class="practice" data-reveal>
+        <div class="demo-cell">
+          <span class="label">Buttons</span>
+          <div class="row">
+            <a class="btn btn-primary" href="#">はじめる <span class="ar">→</span></a>
+            <a class="btn btn-secondary" href="#">ドキュメント</a>
+            <a class="btn btn-quiet" href="#">GitHub で見る</a>
+          </div>
+        </div>
+        <div class="demo-cell">
+          <span class="label">Form field</span>
+          <div class="field">
+            <label for="email">メールアドレス</label>
+            <input id="email" type="email" placeholder="you@example.com">
+            <span class="hint">更新情報のみ。いつでも解除できます。</span>
+          </div>
+        </div>
+        <div class="demo-cell">
+          <span class="label">Badges — status</span>
+          <div class="badges">
+            <span class="badge ok">稼働中</span>
+            <span class="badge warn">保留</span>
+            <span class="badge err">停止</span>
+            <span class="badge neutral">下書き</span>
+          </div>
+        </div>
+        <div class="demo-cell">
+          <span class="label">Card</span>
+          <div class="pcard">
+            <div class="thumb"><span>✳</span></div>
+            <div>
+              <h4>額装するカード</h4>
+              <p>細い罫線と控えめな余白で、内容そのものを主役にする。影には頼らない。</p>
+              <a class="btn btn-quiet" href="#">詳しく見る</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ Colophon ============ -->
+<footer class="colophon">
+  <div class="wrap">
+    <div class="col-grid">
+      <div>
+        <p class="cta-line">静けさを設計する、<br>デザインシステム。</p>
+        <a class="btn btn-primary" href="#">見本帳をダウンロード <span class="ar">→</span></a>
+      </div>
+      <div><h4>System</h4><ul><li><a href="#principles">設計原則</a></li><li><a href="#type">タイポグラフィ</a></li><li><a href="#color">カラー</a></li><li><a href="#practice">コンポーネント</a></li></ul></div>
+      <div><h4>Resources</h4><ul><li><a href="#">ドキュメント</a></li><li><a href="#">トークン (JSON)</a></li><li><a href="#">変更履歴</a></li></ul></div>
+      <div><h4>Elsewhere</h4><ul><li><a href="#">GitHub</a></li><li><a href="#">Figma</a></li><li><a href="#">X</a></li></ul></div>
+    </div>
+    <div class="wordmark" aria-hidden="true">Claude Design<span class="dot">.</span></div>
+    <div class="col-meta">
+      <span>© 2026 Claude Design — The Specimen</span>
+      <span>Vol.01 / Foundations</span>
+      <span>Ivory · Ink · Terracotta</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// テーマトグル — data-theme を切り替えるだけ（＝トークンシステムの証明）
+(function () {
+  const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const label = document.getElementById('themeLabel');
+  const hexes = {
+    light: { bg:'#FAF9F5', bg2:'#F0EEE6', text:'#141413', text2:'#605E58', accent:'#C15F3C', olive:'#6E8250', amber:'#C98A50', clay:'#BF4D43' },
+    dark:  { bg:'#16150F', bg2:'#1E1D16', text:'#F6F4EC', text2:'#B4AF9F', accent:'#E58C6B', olive:'#9BAE7B', amber:'#DDAE7C', clay:'#D8695E' }
+  };
+  function paint(mode) {
+    label.textContent = mode === 'dark' ? 'Dark' : 'Light';
+    const h = hexes[mode];
+    document.getElementById('hx-bg').textContent = h.bg.toUpperCase();
+    document.getElementById('hx-bg2').textContent = h.bg2.toUpperCase();
+    document.getElementById('hx-text').textContent = h.text.toUpperCase();
+    document.getElementById('hx-text2').textContent = h.text2.toUpperCase();
+    document.getElementById('hx-accent').textContent = h.accent.toUpperCase();
+    document.getElementById('hx-olive').textContent = h.olive.toUpperCase();
+    document.getElementById('hx-amber').textContent = h.amber.toUpperCase();
+    document.getElementById('hx-clay').textContent = h.clay.toUpperCase();
+  }
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    root.setAttribute('data-theme', 'dark'); paint('dark');
+  }
+  btn.addEventListener('click', function () {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    paint(next);
+  });
+})();
+
+// reveal
+const io = new IntersectionObserver((es) => {
+  for (const e of es) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>
