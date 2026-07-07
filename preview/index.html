@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,6 +75,24 @@
   --duration-reveal: 700ms;
 }
 
+/* color / semantic (dark) — data-theme="dark" で切替
+   プリミティブ(色そのもの)は変えず、役割トークンだけ再マッピングする */
+[data-theme="dark"] {
+  --bg-primary: #1A1917;
+  --bg-secondary: #211F1B;
+  --bg-inverse: #0E0D0B;           /* ダーク時は最も深い帯 */
+  --bg-inverse-elevated: #17160F;
+  --text-primary: #F5F4EF;
+  --text-secondary: #B4AF9F;
+  --text-inverse-primary: #F5F4EF;
+  --text-inverse-secondary: #A8A49B;
+  --accent: #E08A6D;               /* 暗背景では 1 段明るいテラコッタ */
+  --accent-hover: #E89E84;
+  --accent-on-inverse: #E08A6D;
+  --border: #34322D;
+  --border-inverse: #2A2824;
+}
+
 /* ============================================================
    Base
    ============================================================ */
@@ -90,6 +108,8 @@ body {
   line-height: 1.8;
   -webkit-font-smoothing: antialiased;
   font-feature-settings: "palt" 1;
+  transition: background var(--duration-base) var(--ease-out-expo),
+              color var(--duration-base) var(--ease-out-expo);
 }
 
 /* texture/grain — 紙の質感 */
@@ -100,8 +120,10 @@ body::after {
   z-index: 999;
   pointer-events: none;
   opacity: 0.035;
+  mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
 }
+[data-theme="dark"] body::after { mix-blend-mode: screen; opacity: 0.028; }
 
 ::selection { background: var(--terracotta-500); color: var(--ivory-50); }
 
@@ -214,6 +236,26 @@ a { color: inherit; }
 .site-nav a:not(.btn):hover { color: var(--text-primary); }
 .site-nav .btn { padding: 0.6em 1.4em; }
 @media (max-width: 760px) { .site-nav a:not(.btn) { display: none; } }
+
+/* theme toggle — data-theme を切り替えるだけ(トークンシステムの証明) */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 7px 13px;
+  cursor: pointer;
+  transition: border-color var(--duration-fast), color var(--duration-fast);
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--text-primary); }
+.theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); transition: background var(--duration-fast); }
 
 /* ============================================================
    Hero
@@ -632,6 +674,7 @@ a { color: inherit; }
       <a href="#principles">設計原則</a>
       <a href="#foundation">ファウンデーション</a>
       <a href="#docs">ドキュメント</a>
+      <button class="theme-toggle" id="themeToggle" aria-label="ライト・ダークを切り替え" aria-pressed="false"><span class="dot"></span><span id="themeLabel">Light</span></button>
       <a class="btn" href="#docs">はじめる</a>
     </nav>
   </div>
@@ -836,6 +879,25 @@ a { color: inherit; }
 </footer>
 
 <script>
+// テーマ切替 — data-theme 属性を差し替えるだけで全トークンが再マッピングされる
+(function () {
+  const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const label = document.getElementById('themeLabel');
+  function apply(mode) {
+    root.setAttribute('data-theme', mode);
+    label.textContent = mode === 'dark' ? 'Dark' : 'Light';
+    btn.setAttribute('aria-pressed', mode === 'dark' ? 'true' : 'false');
+  }
+  // OS の設定を初期値として尊重
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    apply('dark');
+  }
+  btn.addEventListener('click', function () {
+    apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+})();
+
 // スクロールリビール — システムで許可された唯一のモーション
 const io = new IntersectionObserver((entries) => {
   for (const e of entries) {
