@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIYORI — Claude Design / Brand・EC パターン</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400..600&family=Shippori+Mincho:wght@500;600;700&family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Claude Design Tokens — Brand / EC パターン
+   (yokanka.com の色面と遊び / drams の操作部品)
+   ============================================================ */
+:root {
+  --ivory-50:  #FAF9F5;
+  --ivory-100: #F0EEE6;
+  --ivory-200: #E8E6DC;
+  --ink-900:   #141413;
+  --ink-500:   #5E5D59;
+  --ink-300:   #A8A49B;
+  --terracotta-500: #D97757;
+  --terracotta-600: #C15F3C;
+  --olive-500: #788C5D;
+  --amber-500: #D4A27F;
+  --clay-500:  #BF4D43;
+
+  --bg-primary: var(--ivory-50);
+  --bg-secondary: var(--ivory-100);
+  --bg-inset: #FFFFFF;
+  --text-primary: var(--ink-900);
+  --text-secondary: var(--ink-500);
+  --text-tertiary: var(--ink-300);
+  --accent: var(--terracotta-600);
+  --accent-soft: var(--terracotta-500);
+  --border: var(--ivory-200);
+  --border-strong: #D3CFC2;
+
+  --font-display: "Shippori Mincho", "Source Serif 4", "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
+  --font-en: "Source Serif 4", Georgia, serif;
+  --font-body: "Inter", "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  --sect: clamp(84px, 11vw, 160px);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --fast: 150ms;
+  --base: 260ms;
+  --reveal: 760ms;
+}
+[data-theme="dark"] {
+  --bg-primary: #1A1917;
+  --bg-secondary: #211F1B;
+  --bg-inset: #242320;
+  --text-primary: #F5F4EF;
+  --text-secondary: #B4AF9F;
+  --text-tertiary: #817C6E;
+  --accent: #E08A6D;
+  --accent-soft: #D97757;
+  --border: #34322D;
+  --border-strong: #45423A;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "palt" 1;
+  transition: background var(--base) var(--ease), color var(--base) var(--ease);
+}
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 999; pointer-events: none;
+  opacity: 0.035; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+[data-theme="dark"] body::after { mix-blend-mode: screen; opacity: 0.028; }
+::selection { background: var(--accent-soft); color: var(--ivory-50); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+a { color: inherit; text-decoration: none; }
+
+.wrap { max-width: 1280px; margin-inline: auto; padding-inline: clamp(20px, 4vw, 48px); }
+.label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-tertiary); }
+.label .tick { color: var(--accent); margin-right: 0.6em; }
+
+[data-reveal] { opacity: 0; transform: translateY(22px); transition: opacity var(--reveal) var(--ease), transform var(--reveal) var(--ease); }
+[data-reveal].in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+  .marquee-track { animation: none !important; }
+  .slab-float { animation: none !important; }
+}
+
+/* ============ Header ============ */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: color-mix(in srgb, var(--bg-primary) 90%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.site-header .wrap { display: flex; align-items: center; justify-content: space-between; height: 66px; gap: 20px; }
+.wordmark { font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; letter-spacing: 0.16em; }
+.wordmark .dot { color: var(--accent); }
+.nav { display: flex; align-items: center; gap: clamp(16px, 2.4vw, 32px); }
+.nav > a:not(.cart) { font-size: 0.85rem; color: var(--text-secondary); transition: color var(--fast); }
+.nav > a:not(.cart):hover { color: var(--text-primary); }
+@media (max-width: 720px) { .nav > a:not(.cart) { display: none; } }
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-secondary); background: transparent;
+  border: 1px solid var(--border-strong); border-radius: 999px;
+  padding: 7px 13px; cursor: pointer;
+  transition: border-color var(--fast), color var(--fast);
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--text-primary); }
+.theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.cart {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.82rem; font-weight: 500;
+  background: var(--text-primary); color: var(--bg-primary);
+  padding: 8px 16px; border-radius: 999px;
+  transition: background var(--fast), transform var(--fast) var(--ease);
+}
+.cart:hover { background: var(--accent); color: var(--ivory-50); transform: translateY(-1px); }
+.cart .count { font-family: var(--font-mono); font-size: 0.7rem; background: var(--accent); color: var(--ivory-50); border-radius: 999px; padding: 1px 7px; transition: background var(--fast); }
+.cart:hover .count { background: var(--ivory-50); color: var(--accent); }
+
+/* ============ Hero — 中央大見出し + 浮かぶ羊羹 ============ */
+.hero { position: relative; text-align: center; padding-block: clamp(76px, 10vw, 130px) var(--sect); overflow: hidden; }
+.hero .label { display: block; margin-bottom: 30px; }
+.hero h1 {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(2.9rem, 7.6vw, 6.4rem);
+  line-height: 1.22; letter-spacing: 0.05em;
+}
+.hero h1 .accent { color: var(--accent); }
+.hero .en-sub { font-family: var(--font-en); font-style: italic; font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--accent); margin-top: 20px; }
+.hero .lead { max-width: 32em; margin: 26px auto 44px; color: var(--text-secondary); font-size: 0.98rem; }
+.hero-cta { display: flex; justify-content: center; align-items: center; gap: 28px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 0.6em;
+  padding: 0.95em 2em; background: var(--accent); color: var(--ivory-50);
+  font-size: 0.88rem; font-weight: 500; letter-spacing: 0.05em;
+  border: none; border-radius: 999px; cursor: pointer;
+  transition: filter var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+.btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.btn .ar { transition: transform var(--fast) var(--ease); }
+.btn:hover .ar { transform: translateX(3px); }
+.btn-quiet { font-size: 0.88rem; font-weight: 500; padding-bottom: 3px; border-bottom: 1px solid var(--border-strong); transition: color var(--fast), border-color var(--fast); }
+.btn-quiet:hover { color: var(--accent); border-color: var(--accent); }
+
+/* 浮かぶ羊羹スラブ(写真の代わりの色面) */
+.slab-row { display: flex; justify-content: center; gap: clamp(14px, 3vw, 34px); margin-top: clamp(48px, 7vw, 84px); }
+.slab {
+  width: clamp(96px, 13vw, 168px); aspect-ratio: 10 / 13;
+  border-radius: 14px 14px 18px 18px;
+  position: relative;
+  box-shadow: 0 18px 38px rgba(20, 20, 19, 0.16);
+}
+.slab::before { /* 上面の照り */
+  content: ""; position: absolute; inset: 7% 8% auto 8%; height: 16%;
+  border-radius: 999px; background: rgba(255, 255, 255, 0.32); filter: blur(1px);
+}
+.slab::after { /* 切り口 */
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 26%;
+  border-radius: 0 0 18px 18px;
+  background: rgba(250, 249, 245, 0.2);
+  border-top: 2px solid rgba(250, 249, 245, 0.45);
+}
+.slab-float { animation: bob 6s ease-in-out infinite; }
+.slab-float:nth-child(2) { animation-delay: -1.6s; }
+.slab-float:nth-child(3) { animation-delay: -3.1s; }
+.slab-float:nth-child(4) { animation-delay: -4.4s; }
+.slab-float:nth-child(5) { animation-delay: -2.3s; }
+@keyframes bob { 0%, 100% { transform: translateY(0) rotate(-1.2deg); } 50% { transform: translateY(-12px) rotate(1.2deg); } }
+.s-matcha { background: linear-gradient(165deg, var(--olive-500), color-mix(in srgb, var(--olive-500) 72%, #000)); }
+.s-anzu { background: linear-gradient(165deg, var(--amber-500), color-mix(in srgb, var(--amber-500) 74%, #833)); }
+.s-ichigo { background: linear-gradient(165deg, var(--clay-500), color-mix(in srgb, var(--clay-500) 72%, #000)); }
+.s-houji { background: linear-gradient(165deg, var(--terracotta-500), var(--terracotta-600)); }
+.s-kokuto { background: linear-gradient(165deg, #3A3630, var(--ink-900)); }
+
+/* ============ Marquee ============ */
+.marquee { border-block: 1px solid var(--border); background: var(--bg-secondary); overflow: hidden; padding-block: 18px; transition: background var(--base); }
+.marquee-track { display: flex; width: max-content; animation: marquee 42s linear infinite; }
+.marquee-track span { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; letter-spacing: 0.14em; white-space: nowrap; color: var(--text-secondary); padding-inline: 1.2em; }
+.marquee-track .sep { color: var(--accent); padding-inline: 0; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* ============ Products ============ */
+.products { padding-block: var(--sect); }
+.sec-head { text-align: center; max-width: 560px; margin-inline: auto; margin-bottom: 60px; }
+.sec-head h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem, 3.8vw, 3rem); letter-spacing: 0.07em; line-height: 1.35; margin-top: 18px; }
+.sec-head p { color: var(--text-secondary); font-size: 0.92rem; margin-top: 14px; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: clamp(14px, 2vw, 24px); }
+.product {
+  background: var(--bg-inset); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  overflow: hidden; display: flex; flex-direction: column;
+  transition: transform var(--base) var(--ease), box-shadow var(--base) var(--ease), background var(--base);
+}
+.product:hover { transform: translateY(-5px); box-shadow: 0 16px 38px rgba(20, 20, 19, 0.1); }
+.product .visual { aspect-ratio: 1; display: grid; place-items: center; position: relative; }
+.product .visual .mini-slab { width: 46%; aspect-ratio: 10 / 13; border-radius: 10px 10px 13px 13px; position: relative; box-shadow: 0 12px 24px rgba(20, 20, 19, 0.18); transition: transform var(--base) var(--ease); }
+.product:hover .visual .mini-slab { transform: translateY(-5px) rotate(-2deg); }
+.product .visual .mini-slab::before { content: ""; position: absolute; inset: 8% 10% auto 10%; height: 14%; border-radius: 999px; background: rgba(255,255,255,0.32); }
+.v-matcha { background: color-mix(in srgb, var(--olive-500) 18%, var(--bg-secondary)); }
+.v-anzu { background: color-mix(in srgb, var(--amber-500) 22%, var(--bg-secondary)); }
+.v-ichigo { background: color-mix(in srgb, var(--clay-500) 16%, var(--bg-secondary)); }
+.v-houji { background: color-mix(in srgb, var(--terracotta-500) 18%, var(--bg-secondary)); }
+.v-kokuto { background: color-mix(in srgb, var(--ink-500) 16%, var(--bg-secondary)); }
+.product .body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.product h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.12rem; letter-spacing: 0.06em; }
+.product .pair { font-size: 0.78rem; color: var(--text-secondary); }
+.product .foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 14px; }
+.product .price { font-family: var(--font-en); font-size: 1.02rem; }
+.product .price small { font-size: 0.68rem; color: var(--text-tertiary); margin-left: 2px; }
+.add {
+  font-size: 0.76rem; font-weight: 500; color: var(--text-primary);
+  background: transparent; border: 1px solid var(--border-strong); border-radius: 999px;
+  padding: 6px 14px; cursor: pointer;
+  transition: background var(--fast), color var(--fast), border-color var(--fast);
+}
+.add:hover, .add.added { background: var(--accent); border-color: var(--accent); color: var(--ivory-50); }
+
+/* ============ Order card — drams 由来の操作部品 ============ */
+.order { padding-block: var(--sect); background: var(--bg-secondary); border-block: 1px solid var(--border); transition: background var(--base); }
+.order-card {
+  max-width: 720px; margin-inline: auto;
+  background: var(--bg-inset); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: clamp(26px, 4vw, 44px);
+  transition: background var(--base);
+}
+.order-card h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.4rem; letter-spacing: 0.08em; margin-bottom: 6px; }
+.order-card .sub { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 30px; }
+.ctl-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-block: 20px; border-top: 1px solid var(--border); }
+.ctl-row:last-of-type { border-bottom: 1px solid var(--border); }
+.ctl-row .ctl-label { font-size: 0.9rem; font-weight: 500; }
+.ctl-row .ctl-label small { display: block; font-weight: 400; font-size: 0.74rem; color: var(--text-tertiary); }
+
+/* stepper */
+.stepper { display: inline-flex; align-items: center; border: 1px solid var(--border-strong); border-radius: 999px; overflow: hidden; }
+.stepper button {
+  width: 38px; height: 36px; display: grid; place-items: center;
+  background: transparent; border: none; cursor: pointer;
+  font-size: 1rem; color: var(--text-secondary);
+  transition: background var(--fast), color var(--fast);
+}
+.stepper button:hover { background: var(--bg-secondary); color: var(--text-primary); }
+.stepper .qty { min-width: 44px; text-align: center; font-family: var(--font-mono); font-size: 0.9rem; }
+
+/* switch */
+.switch { position: relative; width: 52px; height: 30px; background: var(--border-strong); border: none; border-radius: 999px; cursor: pointer; transition: background var(--base) var(--ease); }
+.switch .knob {
+  position: absolute; top: 3px; left: 3px; width: 24px; height: 24px;
+  background: var(--bg-inset); border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(20, 20, 19, 0.25);
+  transition: transform var(--base) var(--ease);
+}
+.switch[aria-checked="true"] { background: var(--accent); }
+.switch[aria-checked="true"] .knob { transform: translateX(22px); }
+
+/* slider */
+.slider-wrap { display: flex; align-items: center; gap: 14px; min-width: min(280px, 50vw); }
+.slider-wrap .end { font-size: 0.72rem; color: var(--text-tertiary); white-space: nowrap; }
+input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1; height: 4px; border-radius: 999px; background: linear-gradient(90deg, var(--accent) var(--fill, 50%), var(--border-strong) var(--fill, 50%)); outline-offset: 4px; }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--bg-inset); border: 1px solid var(--border-strong);
+  box-shadow: 0 1px 4px rgba(20, 20, 19, 0.25); cursor: pointer;
+  transition: transform var(--fast) var(--ease);
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
+
+.order-total { display: flex; align-items: baseline; justify-content: space-between; padding-top: 26px; }
+.order-total .sum { font-family: var(--font-en); font-size: 1.9rem; }
+.order-total .sum small { font-size: 0.8rem; color: var(--text-tertiary); }
+
+/* ============ Story ============ */
+.story { padding-block: var(--sect); text-align: center; }
+.story p.big {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(1.4rem, 3vw, 2.3rem); line-height: 2; letter-spacing: 0.1em;
+  max-width: 26em; margin: 30px auto 0;
+}
+.story p.big .accent { color: var(--accent); }
+
+/* ============ Footer ============ */
+.site-footer { background: var(--bg-secondary); border-top: 1px solid var(--border); padding-block: 60px 30px; transition: background var(--base); }
+.footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: 40px; flex-wrap: wrap; margin-bottom: 48px; }
+.footer-inner .brand { font-family: var(--font-display); font-weight: 700; font-size: 2rem; letter-spacing: 0.14em; }
+.footer-inner .brand .dot { color: var(--accent); }
+.footer-inner .brand p { font-family: var(--font-body); font-weight: 400; font-size: 0.82rem; letter-spacing: 0.04em; color: var(--text-secondary); margin-top: 8px; }
+.footer-links { display: flex; gap: clamp(28px, 5vw, 72px); flex-wrap: wrap; }
+.footer-links h4 { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 14px; }
+.footer-links ul { list-style: none; }
+.footer-links li { margin-bottom: 9px; }
+.footer-links a { font-size: 0.84rem; color: var(--text-secondary); border-bottom: 1px solid transparent; transition: color var(--fast), border-color var(--fast); }
+.footer-links a:hover { color: var(--text-primary); border-color: var(--accent); }
+.footer-meta { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; border-top: 1px solid var(--border-strong); padding-top: 20px; font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="#">HIYORI<span class="dot">。</span></a>
+    <nav class="nav" aria-label="グローバルナビゲーション">
+      <a href="#products">商品</a>
+      <a href="#order">詰め合わせ</a>
+      <a href="#story">ものがたり</a>
+      <button class="theme-toggle" id="themeToggle" aria-label="ライト・ダーク切替" aria-pressed="false"><span class="dot"></span><span id="themeLabel">Light</span></button>
+      <a class="cart" href="#order">カート <span class="count" id="cartCount">0</span></a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="wrap">
+      <div data-reveal>
+        <span class="label"><span class="tick">✳</span>Hiyori Seika — Nouvelle Wagashi, Est. 2026</span>
+        <h1>羊羹は、<br><span class="accent">進化</span>する。</h1>
+        <p class="en-sub">Nouvelle wagashi — la pâtisserie rencontre le yokan.</p>
+        <p class="lead">パティシエの発想と、餡職人の手仕事。果実と洋酒とお茶を、小豆のなかに閉じこめました。五つの味の、あたらしい定番。</p>
+        <div class="hero-cta">
+          <a class="btn" href="#products">五つの味を見る <span class="ar">→</span></a>
+          <a class="btn-quiet" href="#story">ものがたりを読む</a>
+        </div>
+      </div>
+      <div class="slab-row" data-reveal aria-hidden="true">
+        <div class="slab slab-float s-matcha"></div>
+        <div class="slab slab-float s-anzu"></div>
+        <div class="slab slab-float s-ichigo"></div>
+        <div class="slab slab-float s-houji"></div>
+        <div class="slab slab-float s-kokuto"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Marquee -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>抹茶と檸檬</span><span class="sep">✳</span><span>杏とラム</span><span class="sep">✳</span><span>苺と紅茶</span><span class="sep">✳</span><span>ほうじ茶とショコラ</span><span class="sep">✳</span><span>黒糖と胡桃</span><span class="sep">✳</span>
+      <span>抹茶と檸檬</span><span class="sep">✳</span><span>杏とラム</span><span class="sep">✳</span><span>苺と紅茶</span><span class="sep">✳</span><span>ほうじ茶とショコラ</span><span class="sep">✳</span><span>黒糖と胡桃</span><span class="sep">✳</span>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <section class="products" id="products">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <span class="label"><span class="tick">✳</span>Five Flavors</span>
+        <h2>五つの味、<br>五つの色。</h2>
+        <p>どれも一棹ずつ、手流しで。色はすべて素材の色です。</p>
+      </div>
+      <div class="product-grid" data-reveal>
+        <article class="product">
+          <div class="visual v-matcha"><div class="mini-slab s-matcha"></div></div>
+          <div class="body"><h3>抹茶と檸檬</h3><p class="pair">石臼挽き抹茶 × 瀬戸内レモンピール</p>
+            <div class="foot"><span class="price">¥1,800<small>税込</small></span><button class="add">かごへ</button></div></div>
+        </article>
+        <article class="product">
+          <div class="visual v-anzu"><div class="mini-slab s-anzu"></div></div>
+          <div class="body"><h3>杏とラム</h3><p class="pair">信州杏 × ダークラム</p>
+            <div class="foot"><span class="price">¥1,800<small>税込</small></span><button class="add">かごへ</button></div></div>
+        </article>
+        <article class="product">
+          <div class="visual v-ichigo"><div class="mini-slab s-ichigo"></div></div>
+          <div class="body"><h3>苺と紅茶</h3><p class="pair">あまおう × アールグレイ</p>
+            <div class="foot"><span class="price">¥1,800<small>税込</small></span><button class="add">かごへ</button></div></div>
+        </article>
+        <article class="product">
+          <div class="visual v-houji"><div class="mini-slab s-houji"></div></div>
+          <div class="body"><h3>ほうじ茶とショコラ</h3><p class="pair">加賀棒茶 × カカオ70%</p>
+            <div class="foot"><span class="price">¥1,800<small>税込</small></span><button class="add">かごへ</button></div></div>
+        </article>
+        <article class="product">
+          <div class="visual v-kokuto"><div class="mini-slab s-kokuto"></div></div>
+          <div class="body"><h3>黒糖と胡桃</h3><p class="pair">波照間黒糖 × キャラメリゼ胡桃</p>
+            <div class="foot"><span class="price">¥1,800<small>税込</small></span><button class="add">かごへ</button></div></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Order card(drams の操作部品: stepper / switch / slider) -->
+  <section class="order" id="order">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <span class="label"><span class="tick">✳</span>Assort</span>
+        <h2>詰め合わせを、<br>あつらえる。</h2>
+      </div>
+      <div class="order-card" data-reveal>
+        <h3>五色の棹 — 詰め合わせ</h3>
+        <p class="sub">本数と仕立てを選ぶと、その場でお値段が変わります。</p>
+        <div class="ctl-row">
+          <span class="ctl-label">本数<small>1 棹 ¥1,800</small></span>
+          <div class="stepper" role="group" aria-label="本数を選ぶ">
+            <button type="button" id="dec" aria-label="減らす">−</button>
+            <span class="qty" id="qty">3</span>
+            <button type="button" id="inc" aria-label="増やす">＋</button>
+          </div>
+        </div>
+        <div class="ctl-row">
+          <span class="ctl-label">桐箱仕立て<small>+ ¥600 / 熨斗も承ります</small></span>
+          <button type="button" class="switch" id="gift" role="switch" aria-checked="false" aria-label="桐箱仕立てにする"><span class="knob"></span></button>
+        </div>
+        <div class="ctl-row">
+          <span class="ctl-label">甘さの好み<small id="sweetLabel">ちょうどいい</small></span>
+          <div class="slider-wrap">
+            <span class="end">すっきり</span>
+            <input type="range" id="sweet" min="0" max="100" value="50" aria-label="甘さの好み">
+            <span class="end">こっくり</span>
+          </div>
+        </div>
+        <div class="order-total">
+          <span class="label">お会計(税込)</span>
+          <span class="sum" id="total">¥5,400<small> —</small></span>
+        </div>
+        <div style="margin-top: 26px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
+          <button class="btn" id="checkout">この内容で注文する <span class="ar">→</span></button>
+          <a class="btn-quiet" href="#">配送について</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story -->
+  <section class="story" id="story">
+    <div class="wrap" data-reveal>
+      <span class="label"><span class="tick">✳</span>Story</span>
+      <p class="big">和菓子の型に、洋菓子の自由を。<br>ひよりは、伝統の<span class="accent">続きを作る</span>お菓子屋です。</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <div class="brand">HIYORI<span class="dot">。</span><p>ひより製菓 — 京都・出町柳</p></div>
+      <div class="footer-links">
+        <div><h4>Shop</h4><ul><li><a href="#products">五つの味</a></li><li><a href="#order">詰め合わせ</a></li><li><a href="#">のし・包装</a></li></ul></div>
+        <div><h4>About</h4><ul><li><a href="#story">ものがたり</a></li><li><a href="#">職人紹介</a></li><li><a href="#">店舗案内</a></li></ul></div>
+        <div><h4>Help</h4><ul><li><a href="#">配送・支払い</a></li><li><a href="#">お問い合わせ</a></li></ul></div>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <span>© 2026 Hiyori Seika</span>
+      <span>Built with Claude Design — Brand Pattern</span>
+      <span>Matcha · Anzu · Ichigo · Houji · Kokuto</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// テーマ切替
+(function () {
+  const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const label = document.getElementById('themeLabel');
+  function apply(mode) {
+    root.setAttribute('data-theme', mode);
+    label.textContent = mode === 'dark' ? 'Dark' : 'Light';
+    btn.setAttribute('aria-pressed', mode === 'dark' ? 'true' : 'false');
+  }
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) apply('dark');
+  btn.addEventListener('click', () => apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+})();
+
+// カート(かごへ)
+(function () {
+  let count = 0;
+  const badge = document.getElementById('cartCount');
+  document.querySelectorAll('.add').forEach((b) => {
+    b.addEventListener('click', () => {
+      count += 1; badge.textContent = count;
+      b.classList.add('added'); b.textContent = '追加済み';
+      setTimeout(() => { b.classList.remove('added'); b.textContent = 'かごへ'; }, 1400);
+    });
+  });
+})();
+
+// 詰め合わせカード(stepper / switch / slider → 合計金額)
+(function () {
+  const PRICE = 1800, BOX = 600;
+  let qty = 3, gift = false;
+  const qtyEl = document.getElementById('qty');
+  const totalEl = document.getElementById('total');
+  const giftBtn = document.getElementById('gift');
+  const sweet = document.getElementById('sweet');
+  const sweetLabel = document.getElementById('sweetLabel');
+  function render() {
+    qtyEl.textContent = qty;
+    const total = qty * PRICE + (gift ? BOX : 0);
+    totalEl.innerHTML = '¥' + total.toLocaleString('ja-JP') + '<small> ' + (gift ? '桐箱入り' : '—') + '</small>';
+  }
+  document.getElementById('inc').addEventListener('click', () => { if (qty < 20) { qty += 1; render(); } });
+  document.getElementById('dec').addEventListener('click', () => { if (qty > 1) { qty -= 1; render(); } });
+  giftBtn.addEventListener('click', () => {
+    gift = !gift;
+    giftBtn.setAttribute('aria-checked', gift ? 'true' : 'false');
+    render();
+  });
+  sweet.addEventListener('input', () => {
+    sweet.style.setProperty('--fill', sweet.value + '%');
+    const v = Number(sweet.value);
+    sweetLabel.textContent = v < 25 ? 'すっきり寄り' : v > 75 ? 'こっくり寄り' : 'ちょうどいい';
+  });
+  sweet.style.setProperty('--fill', '50%');
+  render();
+})();
+
+// リビール
+const io = new IntersectionObserver((es) => {
+  for (const e of es) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>紡 TSUMUGI — Claude Design / Craft パターン</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400..600&family=Shippori+Mincho:wght@500;600;700&family=Inter:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Claude Design Tokens — Craft パターン
+   (tango-creation.jp × aito.co.jp の空気 / drams の部品精度)
+   ============================================================ */
+:root {
+  --ivory-50:  #FAF9F5;
+  --ivory-100: #F0EEE6;
+  --ivory-200: #E8E6DC;
+  --ink-900:   #141413;
+  --ink-500:   #5E5D59;
+  --ink-300:   #A8A49B;
+  --terracotta-500: #D97757;
+  --terracotta-600: #C15F3C;
+  --olive-500: #788C5D;
+  --amber-500: #D4A27F;
+  --clay-500:  #BF4D43;
+
+  --bg-primary: var(--ivory-50);
+  --bg-secondary: var(--ivory-100);
+  --bg-inset: #FFFFFF;
+  --text-primary: var(--ink-900);
+  --text-secondary: var(--ink-500);
+  --text-tertiary: var(--ink-300);
+  --accent: var(--terracotta-600);
+  --accent-soft: var(--terracotta-500);
+  --border: var(--ivory-200);
+  --border-strong: #D3CFC2;
+
+  --font-display: "Shippori Mincho", "Source Serif 4", "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
+  --font-en: "Source Serif 4", Georgia, serif;
+  --font-body: "Inter", "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  --sect: clamp(88px, 12vw, 176px);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --fast: 150ms;
+  --base: 260ms;
+  --reveal: 760ms;
+}
+[data-theme="dark"] {
+  --bg-primary: #1A1917;
+  --bg-secondary: #211F1B;
+  --bg-inset: #242320;
+  --text-primary: #F5F4EF;
+  --text-secondary: #B4AF9F;
+  --text-tertiary: #817C6E;
+  --accent: #E08A6D;
+  --accent-soft: #D97757;
+  --border: #34322D;
+  --border-strong: #45423A;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "palt" 1;
+  transition: background var(--base) var(--ease), color var(--base) var(--ease);
+}
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 999; pointer-events: none;
+  opacity: 0.035; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+[data-theme="dark"] body::after { mix-blend-mode: screen; opacity: 0.028; }
+::selection { background: var(--accent-soft); color: var(--ivory-50); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+a { color: inherit; text-decoration: none; }
+
+.wrap { max-width: 1360px; margin-inline: auto; padding-inline: clamp(20px, 4vw, 52px); }
+.label {
+  font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--text-tertiary);
+}
+.label .tick { color: var(--accent); margin-right: 0.6em; }
+.bilabel { display: flex; align-items: baseline; gap: 14px; }
+.bilabel .jp { font-family: var(--font-display); font-size: 1rem; font-weight: 600; letter-spacing: 0.14em; }
+.bilabel .en { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-tertiary); }
+
+[data-reveal] { opacity: 0; transform: translateY(22px); transition: opacity var(--reveal) var(--ease), transform var(--reveal) var(--ease); }
+[data-reveal].in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+}
+
+/* ============ Header ============ */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: color-mix(in srgb, var(--bg-primary) 90%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.site-header .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 20px; }
+.wordmark { display: flex; align-items: center; gap: 12px; }
+.wordmark .kanji {
+  width: 38px; height: 38px; display: grid; place-items: center;
+  background: var(--text-primary); color: var(--bg-primary);
+  font-family: var(--font-display); font-weight: 600; font-size: 1.25rem;
+  border-radius: var(--radius-sm);
+  transition: background var(--base), color var(--base);
+}
+.wordmark .name { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; letter-spacing: 0.22em; }
+.wordmark .sub { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.18em; color: var(--text-tertiary); text-transform: uppercase; display: block; margin-top: 1px; }
+.nav { display: flex; align-items: center; gap: clamp(18px, 2.6vw, 36px); }
+.nav a:not(.theme-toggle) { font-size: 0.85rem; color: var(--text-secondary); transition: color var(--fast); }
+.nav a:not(.theme-toggle):hover { color: var(--text-primary); }
+@media (max-width: 780px) { .nav a:not(.theme-toggle) { display: none; } }
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-secondary); background: transparent;
+  border: 1px solid var(--border-strong); border-radius: 999px;
+  padding: 7px 13px; cursor: pointer;
+  transition: border-color var(--fast), color var(--fast);
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--text-primary); }
+.theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+/* ============ Hero — 縦書きの帯 × 明朝の大見出し ============ */
+.hero { position: relative; padding-block: clamp(72px, 10vw, 140px) var(--sect); overflow: hidden; }
+.hero-grid { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 0.92fr); gap: clamp(28px, 5vw, 72px); align-items: stretch; }
+@media (max-width: 960px) { .hero-grid { grid-template-columns: auto 1fr; } .hero-art { grid-column: 1 / -1; margin-top: 40px; } }
+.tategaki {
+  writing-mode: vertical-rl; text-orientation: mixed;
+  font-family: var(--font-display); font-weight: 500; font-size: 1.02rem; letter-spacing: 0.42em;
+  color: var(--text-secondary);
+  border-left: 1px solid var(--border);
+  padding-left: clamp(14px, 2vw, 26px);
+  min-height: 300px;
+}
+.hero h1 {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(2.4rem, 5.4vw, 4.6rem);
+  line-height: 1.28; letter-spacing: 0.06em;
+  margin-bottom: 26px;
+}
+.hero h1 .accent { color: var(--accent); }
+.hero .en-sub { font-family: var(--font-en); font-style: italic; font-size: clamp(1.05rem, 1.8vw, 1.4rem); color: var(--accent); margin-bottom: 26px; }
+.hero .lead { max-width: 30em; color: var(--text-secondary); font-size: 0.98rem; margin-bottom: 44px; }
+.hero-cta { display: flex; align-items: center; gap: 30px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 0.6em;
+  padding: 0.9em 1.9em; background: var(--text-primary); color: var(--bg-primary);
+  font-size: 0.85rem; font-weight: 500; letter-spacing: 0.06em;
+  border: 1px solid var(--text-primary); border-radius: 999px; cursor: pointer;
+  transition: background var(--fast) var(--ease), color var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+.btn:hover { background: var(--accent); border-color: var(--accent); color: var(--ivory-50); transform: translateY(-1px); }
+.btn .ar { transition: transform var(--fast) var(--ease); }
+.btn:hover .ar { transform: translateX(3px); }
+.btn-quiet {
+  font-size: 0.85rem; font-weight: 500; letter-spacing: 0.04em;
+  padding-bottom: 3px; border-bottom: 1px solid var(--border-strong);
+  transition: color var(--fast), border-color var(--fast);
+}
+.btn-quiet:hover { color: var(--accent); border-color: var(--accent); }
+
+/* 織り目のアート(写真の代わりの独自グラフィック) */
+.hero-art { position: relative; }
+.weave-frame {
+  position: relative; height: 100%; min-height: 380px;
+  border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 7px, color-mix(in srgb, var(--bg-primary) 34%, transparent) 7px 8px),
+    repeating-linear-gradient(90deg, var(--terracotta-500) 0 26px, var(--terracotta-600) 26px 30px, var(--amber-500) 30px 44px, var(--terracotta-500) 44px 58px, var(--olive-500) 58px 64px);
+}
+.weave-frame .moon {
+  position: absolute; right: 9%; top: 10%;
+  width: clamp(110px, 12vw, 170px); aspect-ratio: 1; border-radius: 50%;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 600; font-size: clamp(2.4rem, 4vw, 3.6rem);
+  transition: background var(--base), color var(--base);
+}
+.hero-art figcaption {
+  margin-top: 12px; display: flex; justify-content: space-between;
+  font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-tertiary);
+}
+
+/* ============ Statement — 中央の明朝ステートメント ============ */
+.statement { padding-block: var(--sect); border-top: 1px solid var(--border); text-align: center; }
+.statement .label { display: block; margin-bottom: 34px; }
+.statement p {
+  font-family: var(--font-display); font-weight: 500;
+  font-size: clamp(1.45rem, 3.1vw, 2.4rem); line-height: 2.1; letter-spacing: 0.1em;
+  max-width: 27em; margin-inline: auto;
+}
+.statement p .accent { color: var(--accent); }
+
+/* ============ Works — ギャラリー(drams 由来のフィルタ部品つき) ============ */
+.works { padding-block: var(--sect); border-top: 1px solid var(--border); }
+.works-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 44px; }
+.works-head h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.9rem, 3.6vw, 3rem); letter-spacing: 0.08em; line-height: 1.3; margin-top: 16px; }
+
+/* segmented control — Dieter Rams 的な「正直な」切替部品 */
+.seg {
+  display: inline-flex; padding: 4px; gap: 2px;
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: background var(--base);
+}
+.seg button {
+  font-family: var(--font-body); font-size: 0.8rem; font-weight: 500; letter-spacing: 0.04em;
+  color: var(--text-secondary); background: transparent; border: none;
+  padding: 7px 16px; border-radius: 999px; cursor: pointer;
+  transition: background var(--fast) var(--ease), color var(--fast) var(--ease), box-shadow var(--fast);
+}
+.seg button:hover { color: var(--text-primary); }
+.seg button[aria-pressed="true"] {
+  background: var(--bg-inset); color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(20, 20, 19, 0.12);
+}
+
+.gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(14px, 2vw, 26px); }
+@media (max-width: 900px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .gallery { grid-template-columns: 1fr; } }
+.work { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; background: var(--bg-inset); transition: transform var(--base) var(--ease), box-shadow var(--base) var(--ease); }
+.work:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(20, 20, 19, 0.09); }
+.work.hidden { display: none; }
+.work .art { aspect-ratio: 4 / 3; position: relative; overflow: hidden; }
+.work .info { padding: 16px 18px 18px; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.work .info h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.02rem; letter-spacing: 0.08em; }
+.work .info .cat { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-tertiary); }
+/* 織 */
+.art-ori-1 { background: repeating-linear-gradient(90deg, var(--terracotta-500) 0 18px, var(--terracotta-600) 18px 22px, var(--ivory-100) 22px 26px); }
+.art-ori-2 { background: repeating-linear-gradient(45deg, var(--olive-500) 0 14px, color-mix(in srgb, var(--olive-500) 72%, #000) 14px 16px, var(--ivory-100) 16px 22px); }
+.art-ori-3 { background: repeating-linear-gradient(0deg, var(--amber-500) 0 20px, color-mix(in srgb, var(--amber-500) 70%, #fff) 20px 24px, var(--terracotta-500) 24px 28px); }
+/* 陶 */
+.art-tou-1 { background: var(--bg-secondary); }
+.art-tou-1::before { content: ""; position: absolute; inset: 14%; border-radius: 50%; background: radial-gradient(circle at 34% 30%, var(--terracotta-500), var(--terracotta-600) 62%, var(--clay-500)); }
+.art-tou-1::after { content: ""; position: absolute; inset: 38%; border-radius: 50%; background: color-mix(in srgb, var(--ivory-50) 88%, var(--terracotta-500)); }
+.art-tou-2 { background: var(--bg-secondary); }
+.art-tou-2::before { content: ""; position: absolute; left: 18%; right: 18%; top: 26%; bottom: 26%; border-radius: 999px; background: linear-gradient(180deg, var(--olive-500) 0 46%, var(--ivory-100) 46% 52%, color-mix(in srgb, var(--olive-500) 55%, #000) 52%); }
+.art-tou-3 { background: var(--bg-secondary); }
+.art-tou-3::before { content: ""; position: absolute; inset: 12% 30%; border-radius: 12px 12px 999px 999px; background: linear-gradient(180deg, var(--ink-900) 0 30%, var(--clay-500) 30% 34%, color-mix(in srgb, var(--clay-500) 80%, #000) 34%); }
+[data-theme="dark"] .art-ori-1, [data-theme="dark"] .art-ori-2, [data-theme="dark"] .art-ori-3 { filter: saturate(0.92) brightness(0.94); }
+
+/* ============ Ateliers — 工房の番号付きリスト ============ */
+.ateliers { padding-block: var(--sect); border-top: 1px solid var(--border); background: var(--bg-secondary); transition: background var(--base); }
+.ateliers .works-head { margin-bottom: 26px; }
+.atelier-list { list-style: none; border-top: 1px solid var(--border-strong); }
+.atelier {
+  display: grid; grid-template-columns: 90px minmax(0, 4fr) minmax(0, 6fr) auto;
+  gap: clamp(14px, 3vw, 44px); align-items: baseline;
+  padding-block: 34px; border-bottom: 1px solid var(--border-strong);
+  transition: padding-left var(--base) var(--ease);
+}
+.atelier:hover { padding-left: 12px; }
+.atelier .no { font-family: var(--font-en); font-size: 2rem; color: var(--text-tertiary); }
+.atelier h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; letter-spacing: 0.1em; }
+.atelier h3 small { display: block; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-tertiary); margin-top: 6px; }
+.atelier p { font-size: 0.88rem; color: var(--text-secondary); }
+.atelier .place { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-tertiary); justify-self: end; }
+@media (max-width: 860px) {
+  .atelier { grid-template-columns: 56px 1fr; }
+  .atelier .no { font-size: 1.4rem; }
+  .atelier p { grid-column: 2; }
+  .atelier .place { grid-column: 2; justify-self: start; }
+}
+
+/* ============ Journal CTA ============ */
+.journal { padding-block: var(--sect); border-top: 1px solid var(--border); }
+.journal-inner { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
+.journal h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.9rem, 3.6vw, 3rem); letter-spacing: 0.08em; line-height: 1.45; margin-top: 16px; }
+.journal h2 .accent { color: var(--accent); }
+
+/* ============ Footer ============ */
+.site-footer { border-top: 1px solid var(--border); background: var(--bg-secondary); padding-block: 64px 32px; transition: background var(--base); }
+.footer-grid { display: grid; grid-template-columns: auto 1fr auto; gap: clamp(28px, 5vw, 72px); align-items: start; margin-bottom: 56px; }
+@media (max-width: 780px) { .footer-grid { grid-template-columns: 1fr; } .footer-tate { display: none; } }
+.footer-tate {
+  writing-mode: vertical-rl; font-family: var(--font-display); font-weight: 500;
+  font-size: 0.95rem; letter-spacing: 0.4em; color: var(--text-secondary);
+  border-left: 1px solid var(--border-strong); padding-left: 18px; min-height: 170px;
+}
+.footer-links { display: flex; gap: clamp(32px, 6vw, 96px); flex-wrap: wrap; }
+.footer-links h4 { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 16px; }
+.footer-links ul { list-style: none; }
+.footer-links li { margin-bottom: 10px; }
+.footer-links a { font-size: 0.85rem; color: var(--text-secondary); border-bottom: 1px solid transparent; transition: color var(--fast), border-color var(--fast); }
+.footer-links a:hover { color: var(--text-primary); border-color: var(--accent); }
+.footer-mark { text-align: right; }
+.footer-mark .kanji-big { font-family: var(--font-display); font-weight: 600; font-size: clamp(3.4rem, 7vw, 6rem); line-height: 1; }
+.footer-mark .rom { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-tertiary); display: block; margin-top: 10px; }
+.footer-meta { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; border-top: 1px solid var(--border-strong); padding-top: 22px; font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="#">
+      <span class="kanji">紡</span>
+      <span><span class="name">TSUMUGI</span><span class="sub">Craft Platform</span></span>
+    </a>
+    <nav class="nav" aria-label="グローバルナビゲーション">
+      <a href="#about">プロジェクト</a>
+      <a href="#works">作品</a>
+      <a href="#ateliers">工房</a>
+      <a href="#journal">ジャーナル</a>
+      <button class="theme-toggle" id="themeToggle" aria-label="ライト・ダーク切替" aria-pressed="false"><span class="dot"></span><span id="themeLabel">Light</span></button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <p class="tategaki" data-reveal>千年の手仕事と、いまを紡ぐ。</p>
+        <div data-reveal>
+          <p class="label"><span class="tick">✳</span>Tsumugi Craft Platform — Since 2026</p>
+          <h1 style="margin-top:26px">手のひらの、<br><span class="accent">千年</span>。</h1>
+          <p class="en-sub">Where craft traditions meet contemporary makers.</p>
+          <p class="lead">織物と陶芸。ふたつの産地の工房に、国内外のデザイナーが滞在し、対話から作品を生み出すプラットフォームです。伝統は保存するものではなく、更新しつづけるもの。</p>
+          <div class="hero-cta">
+            <a class="btn" href="#works">作品を見る <span class="ar">→</span></a>
+            <a class="btn-quiet" href="#about">プロジェクトについて</a>
+          </div>
+        </div>
+        <figure class="hero-art" data-reveal>
+          <div class="weave-frame"><div class="moon">紡</div></div>
+          <figcaption><span>Fig. 01 — 経糸と緯糸</span><span>Warp &amp; Weft</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Statement -->
+  <section class="statement" id="about">
+    <div class="wrap" data-reveal>
+      <span class="label"><span class="tick">✳</span>Statement</span>
+      <p>道具は、暮らしのかたちをしている。<br>器は食卓を、布は身体を、<br>そっと<span class="accent">受けとめる</span>ために。</p>
+    </div>
+  </section>
+
+  <!-- Works -->
+  <section class="works" id="works">
+    <div class="wrap">
+      <div class="works-head" data-reveal>
+        <div>
+          <div class="bilabel"><span class="jp">作品</span><span class="en">Works</span></div>
+          <h2>対話から生まれた、<br>あたらしい定番。</h2>
+        </div>
+        <div class="seg" role="group" aria-label="カテゴリで絞り込む">
+          <button aria-pressed="true" data-filter="all">すべて</button>
+          <button aria-pressed="false" data-filter="ori">織</button>
+          <button aria-pressed="false" data-filter="tou">陶</button>
+        </div>
+      </div>
+      <div class="gallery" data-reveal>
+        <figure class="work" data-cat="ori"><div class="art art-ori-1"></div><figcaption class="info"><h3>緋色の平織</h3><span class="cat">Ori — 01</span></figcaption></figure>
+        <figure class="work" data-cat="tou"><div class="art art-tou-1"></div><figcaption class="info"><h3>朱釉の皿</h3><span class="cat">Tou — 01</span></figcaption></figure>
+        <figure class="work" data-cat="ori"><div class="art art-ori-2"></div><figcaption class="info"><h3>若苗の綾織</h3><span class="cat">Ori — 02</span></figcaption></figure>
+        <figure class="work" data-cat="tou"><div class="art art-tou-2"></div><figcaption class="info"><h3>苔色の碗</h3><span class="cat">Tou — 02</span></figcaption></figure>
+        <figure class="work" data-cat="ori"><div class="art art-ori-3"></div><figcaption class="info"><h3>茜の縞</h3><span class="cat">Ori — 03</span></figcaption></figure>
+        <figure class="work" data-cat="tou"><div class="art art-tou-3"></div><figcaption class="info"><h3>漆黒の花器</h3><span class="cat">Tou — 03</span></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ateliers -->
+  <section class="ateliers" id="ateliers">
+    <div class="wrap">
+      <div class="works-head" data-reveal>
+        <div>
+          <div class="bilabel"><span class="jp">工房</span><span class="en">Ateliers</span></div>
+          <h2>手を動かす人たち。</h2>
+        </div>
+      </div>
+      <ul class="atelier-list" data-reveal>
+        <li class="atelier">
+          <span class="no">01</span>
+          <h3>綾部織物工房<small>Ayabe Textile Studio</small></h3>
+          <p>創業百二十年。撚糸から製織まで一貫して手がける、平織と綾織の工房。デザイナーとの協働で、着物地を日常着へと翻訳する。</p>
+          <span class="place">Kyoto</span>
+        </li>
+        <li class="atelier">
+          <span class="no">02</span>
+          <h3>瀬戸山陶苑<small>Setoyama Pottery</small></h3>
+          <p>灰釉と鉄釉を得意とする三代目の窯元。「日常の器こそ、最高の道具であれ」を信条に、食卓のための器を焼き続ける。</p>
+          <span class="place">Aichi</span>
+        </li>
+        <li class="atelier">
+          <span class="no">03</span>
+          <h3>漆芸 いろは<small>Urushi Studio Iroha</small></h3>
+          <p>拭き漆から蒔絵まで。素地の木目を活かす加飾で、織と陶のプロダクトに仕上げの表情を与える若手ユニット。</p>
+          <span class="place">Ishikawa</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Journal CTA -->
+  <section class="journal" id="journal">
+    <div class="wrap">
+      <div class="journal-inner" data-reveal>
+        <div>
+          <div class="bilabel"><span class="jp">ジャーナル</span><span class="en">Journal</span></div>
+          <h2>制作の記録は、<br>それ自体が<span class="accent">物語</span>になる。</h2>
+        </div>
+        <a class="btn" href="#">読みものを見る <span class="ar">→</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <p class="footer-tate">紡ぐ、って、続けること。</p>
+      <div class="footer-links">
+        <div><h4>Platform</h4><ul><li><a href="#about">プロジェクト</a></li><li><a href="#works">作品</a></li><li><a href="#ateliers">工房</a></li></ul></div>
+        <div><h4>Visit</h4><ul><li><a href="#">オンラインストア</a></li><li><a href="#">展示のお知らせ</a></li><li><a href="#">工房見学</a></li></ul></div>
+        <div><h4>Contact</h4><ul><li><a href="#">お問い合わせ</a></li><li><a href="#">Instagram</a></li></ul></div>
+      </div>
+      <div class="footer-mark">
+        <div class="kanji-big">紡</div>
+        <span class="rom">Tsumugi Craft Platform</span>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <span>© 2026 Tsumugi Craft Platform</span>
+      <span>Built with Claude Design — Craft Pattern</span>
+      <span>Kyoto · Aichi · Ishikawa</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// テーマ切替 — data-theme の差し替えのみ
+(function () {
+  const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const label = document.getElementById('themeLabel');
+  function apply(mode) {
+    root.setAttribute('data-theme', mode);
+    label.textContent = mode === 'dark' ? 'Dark' : 'Light';
+    btn.setAttribute('aria-pressed', mode === 'dark' ? 'true' : 'false');
+  }
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) apply('dark');
+  btn.addEventListener('click', () => apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+})();
+
+// ギャラリーフィルタ(segmented control)
+(function () {
+  const seg = document.querySelector('.seg');
+  const works = document.querySelectorAll('.work');
+  seg.addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    seg.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    const f = b.dataset.filter;
+    works.forEach((w) => w.classList.toggle('hidden', f !== 'all' && w.dataset.cat !== f));
+  });
+})();
+
+// リビール
+const io = new IntersectionObserver((es) => {
+  for (const e of es) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>
