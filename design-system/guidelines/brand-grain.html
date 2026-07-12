@@ -1,0 +1,18 @@
+<!-- @dsCard group="Brand" viewport="700x200" name="Texture — grain" subtitle="紙の質感。SVG feTurbulence を opacity 0.035 で全面に" -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+body { margin: 0; padding: 0; }
+.grain-demo { position: relative; height: 200px; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; }
+.grain-demo::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.05; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.grain-demo span { font-family: var(--font-display); font-size: 26px; font-weight: 500; }
+.grain-demo .spec { position: absolute; bottom: 14px; right: 18px; font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.08em; color: var(--ink-300); text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="grain-demo"><span>紙の質感</span><span class="spec">feTurbulence &middot; opacity 0.03–0.05</span></div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!-- @dsCard group="Colors" viewport="700x170" name="State colors" subtitle="成功 / 警告 / エラー — アース系の低彩度" -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+body { margin: 0; padding: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.chip .swatch { height: 84px; border-radius: var(--radius-sm); }
+.chip .name { margin-top: 8px; font-size: 0.78rem; font-weight: 500; }
+.chip .hex { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; color: var(--ink-300); text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="chip"><div class="swatch" style="background: var(--olive-500);"></div><div class="name">Olive 500 — 成功</div><div class="hex">#788C5D</div></div>
+<div class="chip"><div class="swatch" style="background: var(--amber-500);"></div><div class="name">Amber 500 — 警告</div><div class="hex">#D4A27F</div></div>
+<div class="chip"><div class="swatch" style="background: var(--clay-500);"></div><div class="name">Clay 500 — エラー</div><div class="hex">#BF4D43</div></div>
+</body>
+</html>

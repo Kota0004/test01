@@ -1,0 +1,18 @@
+<!-- @dsCard group="Spacing" viewport="700x160" name="Section spacing" subtitle="セクション余白は大きく — 96 / 128 / 160px(Polestar 由来)" -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+body { margin: 0; padding: 22px 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-items: end; }
+.col .bar { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.col .k { margin-top: 8px; font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em; color: var(--ink-500); text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="col"><div class="bar" style="height: 58px;"></div><div class="k">section-sm &middot; 96px</div></div>
+<div class="col"><div class="bar" style="height: 77px;"></div><div class="k">section-md &middot; 128px</div></div>
+<div class="col"><div class="bar" style="height: 96px;"></div><div class="k">section-lg &middot; 160px</div></div>
+</body>
+</html>

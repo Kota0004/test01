@@ -1,0 +1,19 @@
+<!-- @dsCard group="Colors" viewport="700x170" name="Text — Ink" subtitle="純黒 #000000 は使わない。インクは暖色系" -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+body { margin: 0; padding: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.chip .swatch { height: 84px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+.chip .name { margin-top: 8px; font-size: 0.78rem; font-weight: 500; }
+.chip .hex { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; color: var(--ink-300); text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="chip"><div class="swatch" style="background: var(--ink-900);"></div><div class="name">Ink 900 — text-primary</div><div class="hex">#141413</div></div>
+<div class="chip"><div class="swatch" style="background: var(--ink-500);"></div><div class="name">Ink 500 — text-secondary</div><div class="hex">#5E5D59</div></div>
+<div class="chip"><div class="swatch" style="background: var(--ink-300);"></div><div class="name">Ink 300 — meta / captions</div><div class="hex">#A8A49B</div></div>
+</body>
+</html>

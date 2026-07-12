@@ -1,0 +1,25 @@
+<!-- @dsCard group="Type" viewport="700x200" name="Stat + Italic" subtitle="セリフの大数字(Oura 由来)と欧文イタリックの強調" -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+body { margin: 0; padding: 0; background: var(--bg-inverse); color: var(--text-inverse-primary); }
+.wrap { display: grid; grid-template-columns: 1fr 1fr 1.4fr; padding: 24px 28px; gap: 0; border-top: none; }
+.stat { padding-right: 24px; border-right: 1px solid var(--border-inverse); }
+.stat + .stat { padding-left: 24px; }
+.value { font-family: var(--font-display); font-size: 52px; font-weight: 500; line-height: 1.1; font-variant-numeric: lining-nums; }
+.value em { font-style: normal; color: var(--accent-on-inverse); }
+.label { display: block; margin-top: 6px; font-size: 0.8rem; color: var(--text-inverse-secondary); }
+.italic { padding-left: 24px; align-self: center; font-family: var(--font-display); font-style: italic; font-size: 22px; color: var(--accent-on-inverse); line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="stat"><span class="value">214</span><span class="label">デザイントークン</span></div>
+<div class="stat"><span class="value">AA<em>&#10035;</em></span><span class="label">WCAG 2.1 準拠</span></div>
+<div class="italic">A design system for calm, confident products.</div>
+</div>
+</body>
+</html>

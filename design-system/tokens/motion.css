@@ -1,0 +1,11 @@
+/* Claude Design — Motion tokens
+   モーションは 2 種類だけ:
+   1) スクロールリビール: opacity 0→1 + translateY(24px→0)、700ms、ease-out-expo(1 回のみ)
+   2) ホバー: 150ms
+   それ以外は動かさない。prefers-reduced-motion で無効化。 */
+:root {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
+  --duration-fast: 150ms;   /* @kind other */ /* hover */
+  --duration-base: 250ms;   /* @kind other */ /* 状態変化 */
+  --duration-reveal: 700ms; /* @kind other */ /* スクロールリビール */
+}

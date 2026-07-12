@@ -1,0 +1,49 @@
+/* Claude Design — Color tokens
+   Source: Kota0004/test01 preview/index.html :root (ground truth)
+   原則: 純白 #FFFFFF と純黒 #000000 は使わない。区切りは影ではなく 1px の罫線。
+   テラコッタは 1 画面に 1〜2 箇所だけ。 */
+:root {
+  /* primitive */
+  --ivory-50:  #FAF9F5;
+  --ivory-100: #F0EEE6;
+  --ivory-200: #E8E6DC;
+  --ink-900:   #141413;
+  --ink-700:   #29261B;
+  --ink-500:   #5E5D59;
+  --ink-300:   #A8A49B;
+  --terracotta-500: #D97757;
+  --terracotta-600: #C15F3C;
+  --olive-500: #788C5D;  /* 成功 */
+  --amber-500: #D4A27F;  /* 警告 */
+  --clay-500:  #BF4D43;  /* エラー */
+
+  /* semantic (light) */
+  --bg-primary: var(--ivory-50);
+  --bg-secondary: var(--ivory-100);
+  --bg-inverse: #141413;            /* ダークセクション(暖色系の黒) */
+  --bg-inverse-elevated: #1F1E1D;
+  --text-primary: var(--ink-900);
+  --text-secondary: var(--ink-500);
+  --text-inverse-primary: #F5F4EF;
+  --text-inverse-secondary: #A8A49B;
+  --accent: var(--terracotta-500);
+  --accent-hover: var(--terracotta-600);
+  --accent-on-inverse: #E08A6D;     /* ダーク上ではテラコッタを 1 段明るく */
+  --border: var(--ivory-200);
+  --border-inverse: #3A3937;
+
+  /* state */
+  --success: var(--olive-500);
+  --warning: var(--amber-500);
+  --error: var(--clay-500);
+}
+
+/* dark theme — 「黒」ではなく暖色系ダークグレー */
+[data-theme="dark"] {
+  --bg-primary: #262624;
+  --bg-secondary: #1F1E1D;
+  --text-primary: #F5F4EF;
+  --text-secondary: #B8B5AD;
+  --accent-hover: #E08A6D;
+  --border: #3A3937;
+}

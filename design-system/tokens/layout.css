@@ -1,0 +1,35 @@
+/* Claude Design — Layout / spacing / shape tokens
+   4px 基準。セクション余白は大きく(96–160px)。左寄せのエディトリアルレイアウト。
+   角丸: 8 / 12 / 16px、ボタンはピル型。 */
+:root {
+  /* spacing (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-section-sm: 96px;
+  --space-section-md: 128px;
+  --space-section-lg: 160px;
+
+  /* grid */
+  --container-full: 1440px;
+  --container-text: 1200px;
+  --gutter: 24px;
+
+  /* shape */
+  --radius-sm: 8px;   /* inputs, buttons(非ピル) */
+  --radius-md: 12px;  /* cards */
+  --radius-lg: 16px;  /* modals, frames */
+  --radius-full: 9999px; /* pills, avatars */
+
+  /* rule — 区切りは影ではなく 1px の罫線 */
+  --rule: 1px solid var(--border);
+  --rule-inverse: 1px solid var(--border-inverse);
+
+  /* shadow — 暖色を混ぜた極めて弱い影(額装カードのみ) */
+  --shadow-card: 0 2px 8px rgba(20, 20, 19, 0.06);
+}

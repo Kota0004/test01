@@ -1,0 +1,21 @@
+<!-- @dsCard group="Colors" viewport="700x180" name="Accent — Terracotta" subtitle="1 画面に 1〜2 箇所だけ。hover で 600 に" -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+body { margin: 0; padding: 18px; display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 12px; align-items: stretch; }
+.chip .swatch { height: 84px; border-radius: var(--radius-sm); }
+.chip .name { margin-top: 8px; font-size: 0.78rem; font-weight: 500; }
+.chip .hex { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; color: var(--ink-300); text-transform: uppercase; }
+.rule { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.7; }
+.rule .tick { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="chip"><div class="swatch" style="background: var(--terracotta-500);"></div><div class="name">Terracotta 500 — accent</div><div class="hex">#D97757</div></div>
+<div class="chip"><div class="swatch" style="background: var(--terracotta-600);"></div><div class="name">Terracotta 600 — hover</div><div class="hex">#C15F3C</div></div>
+<div class="rule"><span class="tick">&#10035;</span> 彩度は資産であり、浪費しない。CTA と強調のみ、1 画面に 1〜2 箇所。ダーク上では <span style="font-family: var(--font-mono); font-size: 0.7rem;">#E08A6D</span> に 1 段明るく。</div>
+</body>
+</html>

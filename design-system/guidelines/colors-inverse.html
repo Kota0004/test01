@@ -1,0 +1,23 @@
+<!-- @dsCard group="Colors" viewport="700x200" name="Dark section — Inverse" subtitle="ダークは「黒」ではなく暖色系。ページに緩急を作る" -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+body { margin: 0; padding: 0; background: var(--bg-inverse); }
+.wrap { padding: 22px 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.chip .swatch { height: 72px; border-radius: var(--radius-sm); border: 1px solid var(--border-inverse); }
+.chip .name { margin-top: 8px; font-size: 0.75rem; font-weight: 500; color: var(--text-inverse-primary); }
+.chip .hex { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.06em; color: var(--text-inverse-secondary); text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="chip"><div class="swatch" style="background: #141413;"></div><div class="name">bg-inverse</div><div class="hex">#141413</div></div>
+<div class="chip"><div class="swatch" style="background: #1F1E1D;"></div><div class="name">bg-inverse-elevated</div><div class="hex">#1F1E1D</div></div>
+<div class="chip"><div class="swatch" style="background: #F5F4EF;"></div><div class="name">text-inverse</div><div class="hex">#F5F4EF</div></div>
+<div class="chip"><div class="swatch" style="background: #E08A6D;"></div><div class="name">accent-on-inverse</div><div class="hex">#E08A6D</div></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!-- @dsCard group="Spacing" viewport="700x180" name="Radius + Rules" subtitle="角丸 8 / 12 / 16 / pill。区切りは影ではなく 1px の罫線" -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+body { margin: 0; padding: 22px 28px; display: flex; gap: 14px; align-items: center; }
+.sq { width: 92px; height: 92px; background: var(--bg-secondary); border: 1px solid var(--border); display: flex; align-items: flex-end; padding: 8px 10px; }
+.sq span { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.06em; color: var(--ink-500); text-transform: uppercase; }
+.pill { height: 44px; padding: 0 24px; border-radius: var(--radius-full); background: var(--terracotta-500); color: var(--ivory-50); display: inline-flex; align-items: center; font-size: 0.85rem; font-weight: 500; }
+.note { margin-left: auto; max-width: 200px; font-size: 0.75rem; color: var(--text-secondary); line-height: 1.6; border-left: none; border-top: 1px solid var(--border); padding-top: 10px; }
+</style>
+</head>
+<body>
+<div class="sq" style="border-radius: var(--radius-sm);"><span>sm &middot; 8</span></div>
+<div class="sq" style="border-radius: var(--radius-md);"><span>md &middot; 12</span></div>
+<div class="sq" style="border-radius: var(--radius-lg);"><span>lg &middot; 16</span></div>
+<div class="pill">pill</div>
+<div class="note">影はほぼ使わない。使う場合も <span style="font-family: var(--font-mono); font-size: 0.66rem;">0 2px 8px rgba(20,20,19,.06)</span> まで。</div>
+</body>
+</html>

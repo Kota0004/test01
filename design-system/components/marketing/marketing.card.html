@@ -1,0 +1,43 @@
+<!-- @dsCard group="Components" viewport="700x400" name="Marketing" subtitle="Eyebrow / Hero / Marquee / EditorialList / DarkBand / StatBand / PullQuote / CaseCard / MegaFooter" -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { Eyebrow, StatBand, PullQuote, EditorialList } = window.ClaudeDesignSystem_2580a7;
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <div>
+    <div style={{ padding: "22px 28px 6px" }}>
+      <Eyebrow>Principles</Eyebrow>
+      <EditorialList
+        style={{ marginTop: 14 }}
+        items={[
+          { title: "余白は情報である", description: "詰めれば安く見え、空ければ高く見える。", href: "#" },
+          { title: "タイポグラフィが階層を作る", description: "色ではなくサイズ・ウェイト・書体で秩序を作る。", href: "#" },
+        ]}
+      />
+    </div>
+    <div style={{ background: "var(--bg-inverse)", padding: "8px 28px 26px", marginTop: 10 }}>
+      <StatBand
+        style={{ marginTop: 20 }}
+        stats={[
+          { value: "214", label: "デザイントークン" },
+          { value: "AA", accent: "✻", label: "WCAG 2.1 準拠" },
+          { value: "2", label: "モーションの種類" },
+        ]}
+      />
+    </div>
+  </div>
+);
+</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!-- @dsCard group="Website" viewport="1440x900" name="Marketing site" subtitle="preview/index.html の忠実な React 再現 — ヒーロー / 原則 / ダーク統計 / 引用 / フッター" -->
+<!-- @startingPoint section="Website" subtitle="マーケティングサイト一式(ヒーロー〜フッター)" viewport="1440x900" -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Design — 静けさを設計するデザインシステム</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+* { margin: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+/* texture/grain — 紙の質感 */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* reveal — システムで許可された唯一のスクロールモーション */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--duration-reveal) var(--ease-out-expo),
+              transform var(--duration-reveal) var(--ease-out-expo);
+}
+[data-reveal].is-visible { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="SiteChrome.jsx"></script>
+<script type="text/babel" src="Foundation.jsx"></script>
+<script type="text/babel">
+const {
+  Button, Eyebrow, HeroEditorial, Marquee, EditorialList,
+  DarkBand, StatBand, PullQuote, MegaFooter,
+} = window.ClaudeDesignSystem_2580a7;
+const { SiteHeader, FigArt, TypeSpecimen, ColorChips } = window;
+
+const container = { maxWidth: "var(--container-full)", margin: "0 auto", padding: "0 clamp(20px, 4vw, 48px)" };
+const monoMeta = { fontFamily: "var(--font-mono)", fontSize: "0.72rem", letterSpacing: "0.12em", color: "var(--ink-300)", textTransform: "uppercase" };
+
+function SectionHead({ eyebrow, title, lead }) {
+  return (
+    <div data-reveal style={{ maxWidth: 620, marginBottom: 72 }}>
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <h2 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-display-xl)", fontWeight: 500, lineHeight: 1.25, letterSpacing: "0.01em", margin: "20px 0 16px" }}>
+        {title}
+      </h2>
+      {lead && <p style={{ color: "var(--text-secondary)", lineHeight: 1.8 }}>{lead}</p>}
+    </div>
+  );
+}
+
+function App() {
+  React.useEffect(() => {
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add("is-visible");
+          io.unobserve(e.target);
+        }
+      }
+    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    document.querySelectorAll("[data-reveal]").forEach((el, i) => {
+      el.style.transitionDelay = `${(i % 4) * 60}ms`;
+      io.observe(el);
+    });
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <div>
+      <SiteHeader
+        links={[
+          { label: "設計原則", href: "#principles" },
+          { label: "ファウンデーション", href: "#foundation" },
+          { label: "ドキュメント", href: "#docs" },
+        ]}
+        cta={<Button size="sm">はじめる</Button>}
+      />
+
+      <main>
+        {/* Hero */}
+        <div style={container}>
+          <div data-reveal>
+            <HeroEditorial
+              eyebrow="Claude Design System — Edition 2026"
+              title={<React.Fragment>静けさを、<br />設計する。</React.Fragment>}
+              subline="A design system for calm, confident products."
+              lead="声を張らないデザインには、根拠が要ります。Claude Design は、余白・活字・節度をトークンとして定義し、どの画面にも同じ品格を与えるデザインシステムです。"
+              actions={
+                <React.Fragment>
+                  <Button arrow>ドキュメントを見る</Button>
+                  <Button variant="quiet">設計原則を読む</Button>
+                </React.Fragment>
+              }
+            >
+              <FigArt />
+            </HeroEditorial>
+          </div>
+          <div
+            data-reveal
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 16,
+              paddingTop: 20,
+              paddingBottom: 24,
+              borderTop: "1px solid var(--border)",
+              ...monoMeta,
+            }}
+          >
+            <span>Tokyo — 2026</span>
+            <span>v0.1 / Foundations</span>
+            <span>Ivory &middot; Ink &middot; Terracotta</span>
+          </div>
+        </div>
+
+        <Marquee words={["余白", "静けさ", "節度", "手触り", "品格", "編集"]} />
+
+        {/* Principles */}
+        <section id="principles" style={{ padding: "var(--space-section-md) 0" }}>
+          <div style={container}>
+            <SectionHead eyebrow="Principles" title={<React.Fragment>四つの原則が、<br />すべてを決める。</React.Fragment>} />
+            <div data-reveal>
+              <EditorialList
+                items={[
+                  { title: "余白は情報である", description: "詰めれば安く見え、空ければ高く見える。余白は削るコストではなく、意味を運ぶ媒体として設計する。", href: "#docs" },
+                  { title: "タイポグラフィが階層を作る", description: "色や罫線より先に、サイズ・ウェイト・書体で秩序を作る。見出しはセリフ、本文はサンセリフ。", href: "#docs" },
+                  { title: "色は少なく、意味深く", description: "画面の 95% はアイボリーとインクで組む。テラコッタは 1 画面に 1〜2 箇所。彩度は資産であり、浪費しない。", href: "#docs" },
+                  { title: "モーションは一種類でいい", description: "700ms のリビールと 150ms のホバー。それ以外の動きは、すべてノイズとして扱う。", href: "#docs" },
+                ]}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* DarkBand + Stats */}
+        <DarkBand
+          eyebrow="Built to scale"
+          title={<React.Fragment>数字で語れる品質を、<br />最初の一日から。</React.Fragment>}
+          lead="トークンからコンポーネントまで一気通貫。ハードコードされた色は一つもなく、テーマの切り替えは属性ひとつで完了します。"
+        >
+          <div data-reveal>
+            <StatBand
+              stats={[
+                { value: "214", label: "デザイントークン" },
+                { value: "48", label: "コンポーネント(P0–P2)" },
+                { value: "AA", accent: "✻", label: "WCAG 2.1 コントラスト準拠" },
+                { value: "2", label: "テーマ — Light / Dark" },
+              ]}
+            />
+          </div>
+        </DarkBand>
+
+        {/* Foundation */}
+        <section id="foundation" style={{ padding: "var(--space-section-md) 0" }}>
+          <div style={container}>
+            <SectionHead
+              eyebrow="Foundation"
+              title={<React.Fragment>活字と色票。<br />それが土台のすべて。</React.Fragment>}
+              lead="Source Serif 4 と Shippori Mincho による見出し、Inter と Noto Sans JP による本文。色は 10 のプリミティブから、意味を持つセマンティックへ。"
+            />
+            <div data-reveal><TypeSpecimen /></div>
+            <div data-reveal><ColorChips /></div>
+          </div>
+        </section>
+
+        <PullQuote
+          quote={<React.Fragment>上質とは、足した量ではなく、<br />削った痕跡が見えないことだ。</React.Fragment>}
+          attribution={<React.Fragment>&mdash; Claude Design 設計原則 / &sect;01</React.Fragment>}
+        />
+
+        {/* CTA */}
+        <section id="docs" style={{ padding: "var(--space-section-md) 0" }}>
+          <div style={container}>
+            <div data-reveal style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 40, flexWrap: "wrap" }}>
+              <div>
+                <Eyebrow>Get started</Eyebrow>
+                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-display-xl)", fontWeight: 500, lineHeight: 1.25, maxWidth: "14em", marginTop: 20 }}>
+                  このシステムで、<br />最初のページを組もう。
+                </h2>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 32, paddingBottom: 8 }}>
+                <Button arrow>ドキュメントを見る</Button>
+                <Button variant="quiet">GitHub</Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <MegaFooter
+        tagline={<React.Fragment>静けさを設計する、<br />デザインシステム。</React.Fragment>}
+        columns={[
+          { heading: "System", links: [{ label: "ファウンデーション", href: "#foundation" }, { label: "設計原則", href: "#principles" }, { label: "コンポーネント" }] },
+          { heading: "Resources", links: [{ label: "ドキュメント" }, { label: "Storybook" }, { label: "変更履歴" }] },
+          { heading: "Elsewhere", links: [{ label: "GitHub" }, { label: "Figma" }, { label: "X" }] },
+        ]}
+        meta={["© 2026 Claude Design", "Set in Source Serif 4 & Inter", "Ivory · Ink · Terracotta"]}
+      />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
