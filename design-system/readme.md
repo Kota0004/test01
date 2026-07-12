@@ -62,6 +62,8 @@
   - `navigation/` — Tabs、DropdownMenu
   - `marketing/` — Eyebrow、HeroEditorial、Marquee、EditorialList、DarkBand、StatBand、PullQuote、CaseCard、MegaFooter
 - `ui_kits/website/` — 見本ページの React 再現(index.html + SiteChrome.jsx + Foundation.jsx)
+- `ui_kits/craft/` — 工芸・文化事業パターン(参照: tango-creation.jp × aito.co.jp)。縦書きの帯、和欧併記ラベル、織/陶の色面アート、セグメンテッドコントロールのギャラリーフィルタ(drams 由来)
+- `ui_kits/brand/` — 食品ブランド EC パターン(参照: yokanka.com)。羊羹スラブの色面ヒーロー、フレーバー色 = 状態色の流用(新色なし)、動作する注文カード(ステッパー / Switch / スライダー → 合計連動、drams 由来)
 - `SKILL.md` — エージェント向けスキル定義
 
 ### Intentional additions

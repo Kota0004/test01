@@ -22,6 +22,12 @@
 - [x] ローカル描画検証: React 18.3.1 UMD + _ds_bundle.js で全 28 コンポーネントを実レンダリング → ALL_COMPONENTS_OK(2026-07-12)。唯一のエラーは Google Fonts への接続遮断(環境のネットワークポリシー由来、実ブラウザでは問題なし)
 - [x] コミット & プッシュ
 
+## 2026-07-12: UI キット 2 種を追加(repo → project の初回書き込み)
+
+- `ui_kits/craft/`(工芸・文化事業: tango-creation.jp × aito.co.jp 参照)と `ui_kits/brand/`(食品ブランド EC: yokanka.com 参照、drams.framer.website 由来の操作部品)を作成し、ローカル検証(React 18 UMD + バンドル、エラーなし)のうえ finalize_plan → write_files でプロジェクトへ追加。readme.md の Index も更新。
+- 書き込みは追加のみ(writes: ui_kits/craft/**, ui_kits/brand/**, readme.md, センチネル)。既存ファイルへの削除・変更なし。_ds_manifest.json はアプリ側の再コンパイルで更新される想定(リポジトリのミラーは旧カード一覧のまま — 次回 pull 時に更新)。
+- 学び: パーセント幅の Slab を auto 幅の親に入れると潰れる(brand の商品カードで発生)→ ラッパーに width% を持たせて解決。
+
 ## 今後の再同期について
 
 - 方向: リポジトリ(design-system/)→ プロジェクト。§1 の再採用ルールに従い atomic path。

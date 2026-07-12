@@ -1,0 +1,354 @@
+<!-- @dsCard group="Craft site" viewport="1440x900" name="Craft platform" subtitle="工芸・文化事業パターン(tango-creation × aito)— 縦書き / 和欧併記 / 織と陶の色面 / ギャラリーフィルタ" -->
+<!-- @startingPoint section="Craft site" subtitle="工芸プラットフォーム一式(縦書きヒーロー〜ギャラリー〜工房)" viewport="1440x900" -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>紡 TSUMUGI — Claude Design / Craft パターン</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+* { margin: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { letter-spacing: 0.02em; }
+/* texture/grain — 紙の質感 */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 999; pointer-events: none; opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { Button, Eyebrow, EditorialList } = window.ClaudeDesignSystem_2580a7;
+
+const wrap = { maxWidth: "var(--container-full)", margin: "0 auto", padding: "0 clamp(20px, 4vw, 52px)" };
+const mono = { fontFamily: "var(--font-mono)", fontSize: "0.68rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--ink-300)" };
+
+/* 和欧併記ラベル(tango-creation 由来) */
+function BiLabel({ jp, en }) {
+  return (
+    <div style={{ display: "flex", alignItems: "baseline", gap: 14 }}>
+      <span style={{ fontFamily: "var(--font-display)", fontSize: "1rem", fontWeight: 600, letterSpacing: "0.14em" }}>{jp}</span>
+      <span style={mono}>{en}</span>
+    </div>
+  );
+}
+
+/* 縦書きの帯 — 工芸・文化事業サイトの定番 */
+function Tategaki({ children, minHeight = 300 }) {
+  return (
+    <p
+      style={{
+        writingMode: "vertical-rl",
+        textOrientation: "mixed",
+        fontFamily: "var(--font-display)",
+        fontWeight: 500,
+        fontSize: "1.02rem",
+        letterSpacing: "0.42em",
+        color: "var(--text-secondary)",
+        borderLeft: "1px solid var(--border)",
+        paddingLeft: "clamp(14px, 2vw, 26px)",
+        minHeight,
+      }}
+    >
+      {children}
+    </p>
+  );
+}
+
+/* 織り目のアート — 写真の代わりの色面グラフィック */
+function WeaveArt() {
+  return (
+    <figure style={{ margin: 0 }} aria-hidden="true">
+      <div
+        style={{
+          position: "relative",
+          minHeight: 380,
+          height: "100%",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius-lg)",
+          overflow: "hidden",
+          background:
+            "repeating-linear-gradient(0deg, transparent 0 7px, rgba(250, 249, 245, 0.34) 7px 8px)," +
+            "repeating-linear-gradient(90deg, var(--terracotta-500) 0 26px, var(--terracotta-600) 26px 30px, var(--amber-500) 30px 44px, var(--terracotta-500) 44px 58px, var(--olive-500) 58px 64px)",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute", right: "9%", top: "10%",
+            width: "clamp(110px, 12vw, 170px)", aspectRatio: "1", borderRadius: "50%",
+            background: "var(--bg-primary)", border: "1px solid var(--border)",
+            display: "grid", placeItems: "center",
+            fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "clamp(2.4rem, 4vw, 3.6rem)",
+          }}
+        >
+          紡
+        </div>
+      </div>
+      <figcaption style={{ ...mono, marginTop: 12, display: "flex", justifyContent: "space-between" }}>
+        <span>Fig. 01 — 経糸と緯糸</span><span>Warp &amp; Weft</span>
+      </figcaption>
+    </figure>
+  );
+}
+
+/* セグメンテッドコントロール(drams 由来 — 正直な造形の切替部品) */
+function Segmented({ options, value, onChange }) {
+  return (
+    <div
+      role="group"
+      style={{
+        display: "inline-flex", padding: 4, gap: 2,
+        background: "var(--bg-secondary)", border: "1px solid var(--border)",
+        borderRadius: "var(--radius-full)",
+      }}
+    >
+      {options.map((o) => (
+        <SegBtn key={o.value} active={o.value === value} onClick={() => onChange(o.value)}>{o.label}</SegBtn>
+      ))}
+    </div>
+  );
+}
+function SegBtn({ active, onClick, children }) {
+  const [hover, setHover] = React.useState(false);
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        fontFamily: "var(--font-body)", fontSize: "0.8rem", fontWeight: 500, letterSpacing: "0.04em",
+        color: active || hover ? "var(--text-primary)" : "var(--text-secondary)",
+        background: active ? "var(--bg-primary)" : "transparent",
+        border: "none", padding: "7px 16px", borderRadius: "var(--radius-full)", cursor: "pointer",
+        boxShadow: active ? "0 1px 3px rgba(20, 20, 19, 0.12)" : "none",
+        transition: "background var(--duration-fast) var(--ease-out-expo), color var(--duration-fast)",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+/* 作品タイル — 織(縞)と陶(器形)の CSS アート */
+const TILE_ART = {
+  "ori-1": { background: "repeating-linear-gradient(90deg, var(--terracotta-500) 0 18px, var(--terracotta-600) 18px 22px, var(--ivory-100) 22px 26px)" },
+  "ori-2": { background: "repeating-linear-gradient(45deg, var(--olive-500) 0 14px, rgba(20,20,19,0.28) 14px 16px, var(--ivory-100) 16px 22px)" },
+  "ori-3": { background: "repeating-linear-gradient(0deg, var(--amber-500) 0 20px, rgba(250,249,245,0.4) 20px 24px, var(--terracotta-500) 24px 28px)" },
+};
+function TileArt({ kind }) {
+  if (TILE_ART[kind]) return <div style={{ aspectRatio: "4 / 3", ...TILE_ART[kind] }}></div>;
+  if (kind === "tou-1") {
+    return (
+      <div style={{ aspectRatio: "4 / 3", position: "relative", background: "var(--bg-secondary)" }}>
+        <div style={{ position: "absolute", inset: "14%", borderRadius: "50%", background: "radial-gradient(circle at 34% 30%, var(--terracotta-500), var(--terracotta-600) 62%, var(--clay-500))" }}></div>
+        <div style={{ position: "absolute", inset: "38%", borderRadius: "50%", background: "var(--ivory-50)" }}></div>
+      </div>
+    );
+  }
+  if (kind === "tou-2") {
+    return (
+      <div style={{ aspectRatio: "4 / 3", position: "relative", background: "var(--bg-secondary)" }}>
+        <div style={{ position: "absolute", left: "18%", right: "18%", top: "26%", bottom: "26%", borderRadius: "var(--radius-full)", background: "linear-gradient(180deg, var(--olive-500) 0 46%, var(--ivory-100) 46% 52%, rgba(20,20,19,0.55) 52%)" }}></div>
+      </div>
+    );
+  }
+  return (
+    <div style={{ aspectRatio: "4 / 3", position: "relative", background: "var(--bg-secondary)" }}>
+      <div style={{ position: "absolute", inset: "12% 30%", borderRadius: "12px 12px 999px 999px", background: "linear-gradient(180deg, var(--ink-900) 0 30%, var(--clay-500) 30% 34%, rgba(20,20,19,0.75) 34%)" }}></div>
+    </div>
+  );
+}
+function WorkTile({ art, title, cat }) {
+  const [hover, setHover] = React.useState(false);
+  return (
+    <figure
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        margin: 0, border: "1px solid var(--border)", borderRadius: "var(--radius-md)",
+        overflow: "hidden", background: "var(--bg-primary)",
+        transform: hover ? "translateY(-4px)" : "none",
+        boxShadow: hover ? "0 14px 34px rgba(20, 20, 19, 0.09)" : "none",
+        transition: "transform var(--duration-base) var(--ease-out-expo), box-shadow var(--duration-base) var(--ease-out-expo)",
+      }}
+    >
+      <TileArt kind={art} />
+      <figcaption style={{ padding: "16px 18px 18px", display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
+        <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "1.02rem", letterSpacing: "0.08em" }}>{title}</span>
+        <span style={mono}>{cat}</span>
+      </figcaption>
+    </figure>
+  );
+}
+
+const WORKS = [
+  { art: "ori-1", title: "緋色の平織", cat: "Ori — 01", group: "ori" },
+  { art: "tou-1", title: "朱釉の皿", cat: "Tou — 01", group: "tou" },
+  { art: "ori-2", title: "若苗の綾織", cat: "Ori — 02", group: "ori" },
+  { art: "tou-2", title: "苔色の碗", cat: "Tou — 02", group: "tou" },
+  { art: "ori-3", title: "茜の縞", cat: "Ori — 03", group: "ori" },
+  { art: "tou-3", title: "漆黒の花器", cat: "Tou — 03", group: "tou" },
+];
+
+function App() {
+  const [filter, setFilter] = React.useState("all");
+  const shown = WORKS.filter((w) => filter === "all" || w.group === filter);
+  return (
+    <div>
+      {/* Header */}
+      <header style={{ position: "sticky", top: 0, zIndex: 100, background: "color-mix(in srgb, var(--bg-primary) 90%, transparent)", backdropFilter: "blur(10px)", borderBottom: "1px solid var(--border)" }}>
+        <div style={{ ...wrap, display: "flex", alignItems: "center", justifyContent: "space-between", height: 68, gap: 20 }}>
+          <a href="#" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", color: "inherit" }}>
+            <span style={{ width: 38, height: 38, display: "grid", placeItems: "center", background: "var(--text-primary)", color: "var(--bg-primary)", fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "1.25rem", borderRadius: "var(--radius-sm)" }}>紡</span>
+            <span>
+              <span style={{ display: "block", fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "1.05rem", letterSpacing: "0.22em" }}>TSUMUGI</span>
+              <span style={{ ...mono, fontSize: "0.6rem" }}>Craft Platform</span>
+            </span>
+          </a>
+          <nav style={{ display: "flex", alignItems: "center", gap: "clamp(18px, 2.6vw, 36px)" }}>
+            {[["プロジェクト", "#about"], ["作品", "#works"], ["工房", "#ateliers"]].map(([l, href]) => (
+              <a key={href} href={href} style={{ fontSize: "0.85rem", color: "var(--text-secondary)", textDecoration: "none" }}>{l}</a>
+            ))}
+            <Button size="sm">工房を訪ねる</Button>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        {/* Hero — 縦書き × 明朝 × 織りアート */}
+        <section style={{ padding: "clamp(72px, 10vw, 140px) 0 clamp(88px, 12vw, 176px)" }}>
+          <div style={{ ...wrap, display: "grid", gridTemplateColumns: "auto minmax(0, 1fr) minmax(0, 0.92fr)", gap: "clamp(28px, 5vw, 72px)", alignItems: "stretch" }}>
+            <Tategaki>千年の手仕事と、いまを紡ぐ。</Tategaki>
+            <div>
+              <Eyebrow>Tsumugi Craft Platform — Since 2026</Eyebrow>
+              <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "clamp(2.4rem, 5.4vw, 4.6rem)", lineHeight: 1.28, letterSpacing: "0.06em", margin: "26px 0" }}>
+                手のひらの、<br /><span style={{ color: "var(--accent-hover)" }}>千年</span>。
+              </h1>
+              <p style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "clamp(1.05rem, 1.8vw, 1.4rem)", color: "var(--accent-hover)", marginBottom: 26 }}>
+                Where craft traditions meet contemporary makers.
+              </p>
+              <p style={{ maxWidth: "30em", color: "var(--text-secondary)", fontSize: "0.98rem", lineHeight: 1.9, marginBottom: 44 }}>
+                織物と陶芸。ふたつの産地の工房に、国内外のデザイナーが滞在し、対話から作品を生み出すプラットフォームです。伝統は保存するものではなく、更新しつづけるもの。
+              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 30, flexWrap: "wrap" }}>
+                <Button arrow>作品を見る</Button>
+                <Button variant="quiet">プロジェクトについて</Button>
+              </div>
+            </div>
+            <WeaveArt />
+          </div>
+        </section>
+
+        {/* Statement */}
+        <section id="about" style={{ padding: "clamp(88px, 12vw, 176px) 0", borderTop: "1px solid var(--border)", textAlign: "center" }}>
+          <div style={wrap}>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 34 }}><Eyebrow>Statement</Eyebrow></div>
+            <p style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "clamp(1.45rem, 3.1vw, 2.4rem)", lineHeight: 2.1, letterSpacing: "0.1em", maxWidth: "27em", margin: "0 auto" }}>
+              道具は、暮らしのかたちをしている。<br />器は食卓を、布は身体を、<br />そっと<span style={{ color: "var(--accent-hover)" }}>受けとめる</span>ために。
+            </p>
+          </div>
+        </section>
+
+        {/* Works — セグメンテッドフィルタ付きギャラリー */}
+        <section id="works" style={{ padding: "clamp(88px, 12vw, 176px) 0", borderTop: "1px solid var(--border)" }}>
+          <div style={wrap}>
+            <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 24, flexWrap: "wrap", marginBottom: 44 }}>
+              <div>
+                <BiLabel jp="作品" en="Works" />
+                <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "clamp(1.9rem, 3.6vw, 3rem)", letterSpacing: "0.08em", lineHeight: 1.3, marginTop: 16 }}>
+                  対話から生まれた、<br />あたらしい定番。
+                </h2>
+              </div>
+              <Segmented
+                value={filter}
+                onChange={setFilter}
+                options={[{ value: "all", label: "すべて" }, { value: "ori", label: "織" }, { value: "tou", label: "陶" }]}
+              />
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "clamp(14px, 2vw, 26px)" }}>
+              {shown.map((w) => <WorkTile key={w.title} {...w} />)}
+            </div>
+          </div>
+        </section>
+
+        {/* Ateliers — 番号付き大型リスト(DS EditorialList) */}
+        <section id="ateliers" style={{ padding: "clamp(88px, 12vw, 176px) 0", borderTop: "1px solid var(--border)", background: "var(--bg-secondary)" }}>
+          <div style={wrap}>
+            <BiLabel jp="工房" en="Ateliers" />
+            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "clamp(1.9rem, 3.6vw, 3rem)", letterSpacing: "0.08em", margin: "16px 0 26px" }}>手を動かす人たち。</h2>
+            <EditorialList
+              items={[
+                { title: "綾部織物工房 — Kyoto", description: "創業百二十年。撚糸から製織まで一貫して手がける、平織と綾織の工房。着物地を日常着へと翻訳する。", href: "#" },
+                { title: "瀬戸山陶苑 — Aichi", description: "灰釉と鉄釉を得意とする三代目の窯元。「日常の器こそ、最高の道具であれ」を信条に食卓のための器を焼く。", href: "#" },
+                { title: "漆芸 いろは — Ishikawa", description: "拭き漆から蒔絵まで。素地の木目を活かす加飾で、織と陶のプロダクトに仕上げの表情を与える若手ユニット。", href: "#" },
+              ]}
+            />
+          </div>
+        </section>
+
+        {/* Journal CTA */}
+        <section style={{ padding: "clamp(88px, 12vw, 176px) 0", borderTop: "1px solid var(--border)" }}>
+          <div style={{ ...wrap, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 40, flexWrap: "wrap" }}>
+            <div>
+              <BiLabel jp="ジャーナル" en="Journal" />
+              <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "clamp(1.9rem, 3.6vw, 3rem)", letterSpacing: "0.08em", lineHeight: 1.45, marginTop: 16 }}>
+                制作の記録は、<br />それ自体が<span style={{ color: "var(--accent-hover)" }}>物語</span>になる。
+              </h2>
+            </div>
+            <Button arrow>読みものを見る</Button>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer — 縦書き + 大きな漢字ワードマーク */}
+      <footer style={{ borderTop: "1px solid var(--border)", background: "var(--bg-secondary)", padding: "64px 0 32px" }}>
+        <div style={wrap}>
+          <div style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "clamp(28px, 5vw, 72px)", alignItems: "start", marginBottom: 56 }}>
+            <Tategaki minHeight={170}>紡って、続けること。</Tategaki>
+            <div style={{ display: "flex", gap: "clamp(32px, 6vw, 96px)", flexWrap: "wrap" }}>
+              {[
+                ["Platform", ["プロジェクト", "作品", "工房"]],
+                ["Visit", ["オンラインストア", "展示のお知らせ", "工房見学"]],
+                ["Contact", ["お問い合わせ", "Instagram"]],
+              ].map(([h, links]) => (
+                <nav key={h}>
+                  <h4 style={{ ...mono, marginBottom: 16 }}>{h}</h4>
+                  <ul style={{ listStyle: "none", padding: 0 }}>
+                    {links.map((l) => (
+                      <li key={l} style={{ marginBottom: 10 }}>
+                        <a href="#" style={{ fontSize: "0.85rem", color: "var(--text-secondary)", textDecoration: "none" }}>{l}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              ))}
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "clamp(3.4rem, 7vw, 6rem)", lineHeight: 1 }}>紡</div>
+              <span style={{ ...mono, display: "block", marginTop: 10, letterSpacing: "0.3em" }}>Tsumugi Craft Platform</span>
+            </div>
+          </div>
+          <div style={{ ...mono, display: "flex", justifyContent: "space-between", gap: 14, flexWrap: "wrap", borderTop: "1px solid var(--border)", paddingTop: 22 }}>
+            <span>© 2026 Tsumugi Craft Platform</span>
+            <span>Built with Claude Design — Craft Pattern</span>
+            <span>Kyoto · Aichi · Ishikawa</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!-- @dsCard group="Brand site" viewport="1440x900" name="Food brand / EC" subtitle="食品ブランド EC パターン(yokanka)— 羊羹スラブの色面 / 動作する注文カード(stepper・switch・slider)" -->
+<!-- @startingPoint section="Brand site" subtitle="ブランド EC 一式(色面ヒーロー〜商品〜注文カード)" viewport="1440x900" -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIYORI — Claude Design / Brand・EC パターン</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+* { margin: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 999; pointer-events: none; opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@keyframes hiyori-bob { 0%, 100% { transform: translateY(0) rotate(-1.2deg); } 50% { transform: translateY(-12px) rotate(1.2deg); } }
+@media (prefers-reduced-motion: reduce) { .slab-float { animation: none !important; } }
+/* range slider(drams 由来 — 機能が形を決める) */
+input[type="range"].hiyori-range { -webkit-appearance: none; appearance: none; flex: 1; height: 4px; border-radius: var(--radius-full); background: linear-gradient(90deg, var(--accent) var(--fill, 50%), var(--ivory-200) var(--fill, 50%)); }
+input[type="range"].hiyori-range::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--bg-primary); border: 1px solid var(--ink-300);
+  box-shadow: 0 1px 4px rgba(20, 20, 19, 0.25); cursor: pointer;
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { Button, Eyebrow, Marquee, Switch, MegaFooter } = window.ClaudeDesignSystem_2580a7;
+
+const wrap = { maxWidth: 1280, margin: "0 auto", padding: "0 clamp(20px, 4vw, 48px)" };
+const mono = { fontFamily: "var(--font-mono)", fontSize: "0.68rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--ink-300)" };
+
+/* フレーバー = システムの状態色をそのまま流用(新しい色は作らない) */
+const FLAVORS = [
+  { key: "matcha", name: "抹茶と檸檬", pair: "石臼挽き抹茶 × 瀬戸内レモンピール", from: "var(--olive-500)", to: "rgba(20, 20, 19, 0.72)" },
+  { key: "anzu", name: "杏とラム", pair: "信州杏 × ダークラム", from: "var(--amber-500)", to: "rgba(136, 64, 48, 0.62)" },
+  { key: "ichigo", name: "苺と紅茶", pair: "あまおう × アールグレイ", from: "var(--clay-500)", to: "rgba(20, 20, 19, 0.66)" },
+  { key: "houji", name: "ほうじ茶とショコラ", pair: "加賀棒茶 × カカオ70%", from: "var(--terracotta-500)", to: "var(--terracotta-600)" },
+  { key: "kokuto", name: "黒糖と胡桃", pair: "波照間黒糖 × キャラメリゼ胡桃", from: "#3A3630", to: "var(--ink-900)" },
+];
+
+/* 羊羹スラブ — 商品を色面として見せる(yokanka 由来) */
+function Slab({ from, to, size = "clamp(96px, 13vw, 168px)", float = false, delay = 0 }) {
+  return (
+    <div
+      className={float ? "slab-float" : undefined}
+      style={{
+        width: size, aspectRatio: "10 / 13", position: "relative",
+        borderRadius: "14px 14px 18px 18px",
+        background: `linear-gradient(165deg, ${from}, ${to})`,
+        boxShadow: "0 18px 38px rgba(20, 20, 19, 0.16)",
+        animation: float ? `hiyori-bob 6s ease-in-out ${delay}s infinite` : "none",
+      }}
+    >
+      <div style={{ position: "absolute", inset: "7% 8% auto 8%", height: "16%", borderRadius: "var(--radius-full)", background: "rgba(255, 255, 255, 0.32)", filter: "blur(1px)" }}></div>
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "26%", borderRadius: "0 0 18px 18px", background: "rgba(250, 249, 245, 0.2)", borderTop: "2px solid rgba(250, 249, 245, 0.45)" }}></div>
+    </div>
+  );
+}
+
+/* 商品カード */
+function ProductCard({ flavor, onAdd }) {
+  const [hover, setHover] = React.useState(false);
+  const [added, setAdded] = React.useState(false);
+  return (
+    <article
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        background: "var(--bg-primary)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)",
+        overflow: "hidden", display: "flex", flexDirection: "column",
+        transform: hover ? "translateY(-5px)" : "none",
+        boxShadow: hover ? "0 16px 38px rgba(20, 20, 19, 0.1)" : "none",
+        transition: "transform var(--duration-base) var(--ease-out-expo), box-shadow var(--duration-base) var(--ease-out-expo)",
+      }}
+    >
+      <div style={{ aspectRatio: "1", display: "grid", placeItems: "center", background: `color-mix(in srgb, ${flavor.from} 18%, var(--bg-secondary))` }}>
+        <div style={{ width: "46%", transform: hover ? "translateY(-5px) rotate(-2deg)" : "none", transition: "transform var(--duration-base) var(--ease-out-expo)" }}>
+          <Slab from={flavor.from} to={flavor.to} size="100%" />
+        </div>
+      </div>
+      <div style={{ padding: "18px 20px 20px", display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
+        <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "1.12rem", letterSpacing: "0.06em" }}>{flavor.name}</h3>
+        <p style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>{flavor.pair}</p>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto", paddingTop: 14 }}>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: "1.02rem" }}>¥1,800<small style={{ fontSize: "0.68rem", color: "var(--ink-300)", marginLeft: 2 }}>税込</small></span>
+          <button
+            type="button"
+            onClick={() => { onAdd(); setAdded(true); setTimeout(() => setAdded(false), 1400); }}
+            style={{
+              fontSize: "0.76rem", fontWeight: 500, cursor: "pointer",
+              color: added ? "var(--ivory-50)" : "var(--text-primary)",
+              background: added ? "var(--accent)" : "transparent",
+              border: `1px solid ${added ? "var(--accent)" : "var(--ink-300)"}`,
+              borderRadius: "var(--radius-full)", padding: "6px 14px",
+              transition: "background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast)",
+            }}
+          >
+            {added ? "追加済み" : "かごへ"}
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/* ステッパー(drams 由来) */
+function Stepper({ value, min = 1, max = 20, onChange }) {
+  const btn = {
+    width: 38, height: 36, display: "grid", placeItems: "center",
+    background: "transparent", border: "none", cursor: "pointer",
+    fontSize: "1rem", color: "var(--text-secondary)",
+  };
+  return (
+    <div style={{ display: "inline-flex", alignItems: "center", border: "1px solid var(--ink-300)", borderRadius: "var(--radius-full)", overflow: "hidden" }} role="group" aria-label="本数を選ぶ">
+      <button type="button" style={btn} aria-label="減らす" onClick={() => value > min && onChange(value - 1)}>−</button>
+      <span style={{ minWidth: 44, textAlign: "center", fontFamily: "var(--font-mono)", fontSize: "0.9rem" }}>{value}</span>
+      <button type="button" style={btn} aria-label="増やす" onClick={() => value < max && onChange(value + 1)}>＋</button>
+    </div>
+  );
+}
+
+/* 注文カード — stepper / switch / slider が合計金額に連動 */
+const PRICE = 1800, BOX = 600;
+function OrderCard() {
+  const [qty, setQty] = React.useState(3);
+  const [gift, setGift] = React.useState(false);
+  const [sweet, setSweet] = React.useState(50);
+  const total = qty * PRICE + (gift ? BOX : 0);
+  const rowStyle = { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, padding: "20px 0", borderTop: "1px solid var(--border)" };
+  const label = (main, sub) => (
+    <span style={{ fontSize: "0.9rem", fontWeight: 500 }}>
+      {main}
+      <small style={{ display: "block", fontWeight: 400, fontSize: "0.74rem", color: "var(--ink-300)" }}>{sub}</small>
+    </span>
+  );
+  return (
+    <div style={{ maxWidth: 720, margin: "0 auto", background: "var(--bg-primary)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "clamp(26px, 4vw, 44px)" }}>
+      <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "1.4rem", letterSpacing: "0.08em", marginBottom: 6 }}>五色の棹 — 詰め合わせ</h3>
+      <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: 30 }}>本数と仕立てを選ぶと、その場でお値段が変わります。</p>
+      <div style={rowStyle}>
+        {label("本数", "1 棹 ¥1,800")}
+        <Stepper value={qty} onChange={setQty} />
+      </div>
+      <div style={rowStyle}>
+        {label("桐箱仕立て", "+ ¥600 / 熨斗も承ります")}
+        <Switch checked={gift} onChange={setGift} />
+      </div>
+      <div style={{ ...rowStyle, borderBottom: "1px solid var(--border)" }}>
+        {label("甘さの好み", sweet < 25 ? "すっきり寄り" : sweet > 75 ? "こっくり寄り" : "ちょうどいい")}
+        <div style={{ display: "flex", alignItems: "center", gap: 14, minWidth: "min(280px, 50vw)" }}>
+          <span style={{ fontSize: "0.72rem", color: "var(--ink-300)", whiteSpace: "nowrap" }}>すっきり</span>
+          <input
+            type="range" className="hiyori-range" min="0" max="100" value={sweet} aria-label="甘さの好み"
+            style={{ "--fill": sweet + "%" }}
+            onChange={(e) => setSweet(Number(e.target.value))}
+          />
+          <span style={{ fontSize: "0.72rem", color: "var(--ink-300)", whiteSpace: "nowrap" }}>こっくり</span>
+        </div>
+      </div>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", paddingTop: 26 }}>
+        <Eyebrow tick={false}>お会計(税込)</Eyebrow>
+        <span style={{ fontFamily: "var(--font-display)", fontSize: "1.9rem" }}>
+          ¥{total.toLocaleString("ja-JP")}
+          <small style={{ fontSize: "0.8rem", color: "var(--ink-300)", marginLeft: 6 }}>{gift ? "桐箱入り" : "—"}</small>
+        </span>
+      </div>
+      <div style={{ marginTop: 26, display: "flex", gap: 24, alignItems: "center", flexWrap: "wrap" }}>
+        <Button arrow>この内容で注文する</Button>
+        <Button variant="quiet">配送について</Button>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [cart, setCart] = React.useState(0);
+  return (
+    <div>
+      {/* Header */}
+      <header style={{ position: "sticky", top: 0, zIndex: 100, background: "color-mix(in srgb, var(--bg-primary) 90%, transparent)", backdropFilter: "blur(10px)", borderBottom: "1px solid var(--border)" }}>
+        <div style={{ ...wrap, display: "flex", alignItems: "center", justifyContent: "space-between", height: 66, gap: 20 }}>
+          <a href="#" style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.3rem", letterSpacing: "0.16em", textDecoration: "none", color: "inherit" }}>
+            HIYORI<span style={{ color: "var(--accent)" }}>。</span>
+          </a>
+          <nav style={{ display: "flex", alignItems: "center", gap: "clamp(16px, 2.4vw, 32px)" }}>
+            {[["商品", "#products"], ["詰め合わせ", "#order"], ["ものがたり", "#story"]].map(([l, href]) => (
+              <a key={href} href={href} style={{ fontSize: "0.85rem", color: "var(--text-secondary)", textDecoration: "none" }}>{l}</a>
+            ))}
+            <a href="#order" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: "0.82rem", fontWeight: 500, background: "var(--text-primary)", color: "var(--bg-primary)", padding: "8px 16px", borderRadius: "var(--radius-full)", textDecoration: "none" }}>
+              カート
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", background: "var(--accent)", color: "var(--ivory-50)", borderRadius: "var(--radius-full)", padding: "1px 7px" }}>{cart}</span>
+            </a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        {/* Hero — 中央大見出し + 浮かぶ羊羹 */}
+        <section style={{ textAlign: "center", padding: "clamp(76px, 10vw, 130px) 0 clamp(84px, 11vw, 160px)", overflow: "hidden" }}>
+          <div style={wrap}>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 30 }}>
+              <Eyebrow>Hiyori Seika — Nouvelle Wagashi, Est. 2026</Eyebrow>
+            </div>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(2.9rem, 7.6vw, 6.4rem)", lineHeight: 1.22, letterSpacing: "0.05em" }}>
+              羊羹は、<br /><span style={{ color: "var(--accent-hover)" }}>進化</span>する。
+            </h1>
+            <p style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "clamp(1.1rem, 2vw, 1.5rem)", color: "var(--accent-hover)", marginTop: 20 }}>
+              Nouvelle wagashi — la pâtisserie rencontre le yokan.
+            </p>
+            <p style={{ maxWidth: "32em", margin: "26px auto 44px", color: "var(--text-secondary)", fontSize: "0.98rem", lineHeight: 1.9 }}>
+              パティシエの発想と、餡職人の手仕事。果実と洋酒とお茶を、小豆のなかに閉じこめました。五つの味の、あたらしい定番。
+            </p>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 28, flexWrap: "wrap" }}>
+              <Button arrow>五つの味を見る</Button>
+              <Button variant="quiet">ものがたりを読む</Button>
+            </div>
+            <div style={{ display: "flex", justifyContent: "center", gap: "clamp(14px, 3vw, 34px)", marginTop: "clamp(48px, 7vw, 84px)" }} aria-hidden="true">
+              {FLAVORS.map((f, i) => <Slab key={f.key} from={f.from} to={f.to} float delay={-i * 1.4} />)}
+            </div>
+          </div>
+        </section>
+
+        {/* Marquee(DS コンポーネント) */}
+        <Marquee duration={42} words={FLAVORS.map((f) => f.name)} />
+
+        {/* Products */}
+        <section id="products" style={{ padding: "clamp(84px, 11vw, 160px) 0" }}>
+          <div style={wrap}>
+            <div style={{ textAlign: "center", maxWidth: 560, margin: "0 auto 60px" }}>
+              <div style={{ display: "flex", justifyContent: "center" }}><Eyebrow>Five Flavors</Eyebrow></div>
+              <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(1.9rem, 3.8vw, 3rem)", letterSpacing: "0.07em", lineHeight: 1.35, marginTop: 18 }}>
+                五つの味、<br />五つの色。
+              </h2>
+              <p style={{ color: "var(--text-secondary)", fontSize: "0.92rem", marginTop: 14 }}>どれも一棹ずつ、手流しで。色はすべて素材の色です。</p>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "clamp(14px, 2vw, 24px)" }}>
+              {FLAVORS.map((f) => <ProductCard key={f.key} flavor={f} onAdd={() => setCart((c) => c + 1)} />)}
+            </div>
+          </div>
+        </section>
+
+        {/* Order card — drams の操作部品 */}
+        <section id="order" style={{ padding: "clamp(84px, 11vw, 160px) 0", background: "var(--bg-secondary)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
+          <div style={wrap}>
+            <div style={{ textAlign: "center", maxWidth: 560, margin: "0 auto 60px" }}>
+              <div style={{ display: "flex", justifyContent: "center" }}><Eyebrow>Assort</Eyebrow></div>
+              <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(1.9rem, 3.8vw, 3rem)", letterSpacing: "0.07em", lineHeight: 1.35, marginTop: 18 }}>
+                詰め合わせを、<br />あつらえる。
+              </h2>
+            </div>
+            <OrderCard />
+          </div>
+        </section>
+
+        {/* Story */}
+        <section id="story" style={{ padding: "clamp(84px, 11vw, 160px) 0", textAlign: "center" }}>
+          <div style={wrap}>
+            <div style={{ display: "flex", justifyContent: "center" }}><Eyebrow>Story</Eyebrow></div>
+            <p style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "clamp(1.4rem, 3vw, 2.3rem)", lineHeight: 2, letterSpacing: "0.1em", maxWidth: "26em", margin: "30px auto 0" }}>
+              和菓子の型に、洋菓子の自由を。<br />ひよりは、伝統の<span style={{ color: "var(--accent-hover)" }}>続きを作る</span>お菓子屋です。
+            </p>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer(DS MegaFooter) */}
+      <MegaFooter
+        tagline={<React.Fragment>五つの味、五つの色。<br />ひより製菓 — 京都・出町柳</React.Fragment>}
+        wordmark="HIYORI。"
+        columns={[
+          { heading: "Shop", links: [{ label: "五つの味", href: "#products" }, { label: "詰め合わせ", href: "#order" }, { label: "のし・包装" }] },
+          { heading: "About", links: [{ label: "ものがたり", href: "#story" }, { label: "職人紹介" }, { label: "店舗案内" }] },
+          { heading: "Help", links: [{ label: "配送・支払い" }, { label: "お問い合わせ" }] },
+        ]}
+        meta={["© 2026 Hiyori Seika", "Built with Claude Design — Brand Pattern", "Matcha · Anzu · Ichigo · Houji · Kokuto"]}
+      />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
